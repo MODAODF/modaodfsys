@@ -1211,7 +1211,9 @@ bool ScViewFunc::MergeCells( bool bApi, bool& rDoContents, bool bCenter )
     bool bOk = true;
     bool bEmptyMergedCells = officecfg::Office::Calc::Compatibility::MergeCells::EmptyMergedCells::get();
 
-    if (bAskDialog)
+// <<AlanTang 2017/09/12 disabled MergeCellDialog
+    rDoContents = true;
+    if (bAskDialog && !comphelper::LibreOfficeKit::isActive())
     {
         bool bShowDialog = officecfg::Office::Calc::Compatibility::MergeCells::ShowDialog::get();
         if (!bApi && bShowDialog)
