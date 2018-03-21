@@ -5,24 +5,24 @@ Globals
         variables
         {
             LIBO_VERSION_MAJOR @LIBO_VERSION_MAJOR@
-            UREPACKAGEVERSION @LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@.@LIBO_VERSION_MICRO@.@LIBO_VERSION_PATCH@@LIBO_VERSION_SUFFIX@
+            UREPACKAGEVERSION @USERDIRPRODUCTVERSION@.@OXO_VERSION_MINOR@
             URELAYERVERSION 1
             REFERENCEOOOMAJORMINOR 4.1
             WINDOWSBASISROOTNAME @PRODUCTNAME@ @USERDIRPRODUCTVERSION@
-            UNIXBASISROOTNAME libreoffice@LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@
+            UNIXBASISROOTNAME oxoffice@USERDIRPRODUCTVERSION@
             HIDELICENSEDIALOG 1
             PACKAGEPREFIX
-            BASISPACKAGEPREFIX libobasis
-            UREPACKAGEPREFIX libreoffice
+            BASISPACKAGEPREFIX oxoobasis
+            UREPACKAGEPREFIX oxoffice
             SOLSUREPACKAGEPREFIX libreoffice
-            PROGRESSBARCOLOR 0,0,0
-            PROGRESSFRAMECOLOR 102,102,102
-            PROGRESSPOSITION 30,145
-            PROGRESSSIZE 385,8
+            PROGRESSBARCOLOR 128,128,128
+            PROGRESSFRAMECOLOR 245,245,245
+            PROGRESSPOSITION 72,189
+            PROGRESSSIZE 409,8
             PROGRESSPOSITIONHIGH 30,200
             PROGRESSSIZEHIGH 650,12
             PROGRESSTEXTBASELINE 170
-            PROGRESSTEXTCOLOR 0,0,0
+            PROGRESSTEXTCOLOR 255,255,255
             NATIVEPROGRESS false
             REGISTRYLAYERNAME Layers
             SERVICEPACK 1
@@ -31,6 +31,7 @@ Globals
             UPDATE_DATABASE_LISTNAME finals_instsetoo.txt
             PACKAGEMAP package_names.txt,package_names_ext.txt
             WINDOWSPATCHLEVEL 8
+            STARTCENTER_HIDE_EXTERNAL_LINKS 0
             64BITPRODUCT @WINDOWS_X64@
             WINDOWSSDKVERSION @WINDOWS_SDK_VERSION@
             CRASHDUMPENABLE @DEFAULT_CRASHDUMP_VALUE@
@@ -46,29 +47,30 @@ Globals
         {
             PRODUCTNAME @PRODUCTNAME@
             PRODUCTVERSION @LPRODUCTVERSION@
-            PRODUCTEXTENSION 
+            PRODUCTEXTENSION
             POSTVERSIONEXTENSION
             BUNDLEIDENTIFIER @MACOSX_BUNDLE_IDENTIFIER@
-            BRANDPACKAGEVERSION @LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@
+            BRANDPACKAGEVERSION @USERDIRPRODUCTVERSION@
             USERDIRPRODUCTVERSION @USERDIRPRODUCTVERSION@
             ABOUTBOXPRODUCTVERSION @ABOUTBOXPRODUCTVERSION@
-            ABOUTBOXPRODUCTVERSIONSUFFIX @LIBO_VERSION_SUFFIX_SUFFIX@
-            BASEPRODUCTVERSION @LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@
+            ABOUTBOXPRODUCTVERSIONSUFFIX
+            BASEPRODUCTVERSION @USERDIRPRODUCTVERSION@.@OXO_VERSION_MINOR@
             PCPFILENAME libreoffice.pcp
-            UPDATEURL https://update.libreoffice.org/check.php
+            UPDATEURL http://update.libreoffice.org/check.php
             ADD_INCLUDE_FILES cli_ure/version/version.txt,unoil/climaker/version.txt
             ADDSYSTEMINTEGRATION 1
-            PACKAGEVERSION @LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@.@LIBO_VERSION_MICRO@.@LIBO_VERSION_PATCH@@LIBO_VERSION_SUFFIX@
-            PACKAGEREVISION {buildid}
+            PACKAGEVERSION @USERDIRPRODUCTVERSION@.@OXO_VERSION_MINOR@
+            PACKAGEREVISION @OXO_VERSION_PATCH@
             LICENSENAME LGPL
             ROOTMODULEGID gid_Module_Root
             GLOBALPATCHFILEGID gid_File_Txt_Patchfiles
             SPELLCHECKERFILE spellchecker_selection.txt
             CHANGETARGETDIR 1
             PATCHCODEFILE ooo_patchcodes.txt
-            STARTCENTER_ADDFEATURE_URL https://extensions.libreoffice.org/
+            STARTCENTER_ADDFEATURE_URL http://extensions.libreoffice.org/
             STARTCENTER_INFO_URL http://www.openoffice.com.tw/
-            STARTCENTER_TEMPLREP_URL https://templates.libreoffice.org/
+            STARTCENTER_TEMPLREP_URL http://templates.libreoffice.org/
+            STARTCENTER_HIDE_EXTERNAL_LINKS 0
         }
         active          1
         compression     5
@@ -76,7 +78,7 @@ Globals
         downloadname    LibreOffice_{productversion}_{os}_install_{languages}
         langpackdownloadname    LibreOffice_{productversion}_languagepack_{os}_install_{languages}
         helppackdownloadname    LibreOffice_{productversion}_helppack_{os}_install_{languages}
-        include         {installscriptdir},{customtargetpath}/readlicense_oo/readme,{customtargetpath}/sysui/{pkgtype},{customtargetpath}/setup_native,{filelistpath}/PackageSet,{filelistpath}/GeneratedPackage,{filelistpath}/Package,{filelistpath}/ExtensionPackage,{filelistpath}/CustomTarget/helpcontent2/help3xsl/filelists,{extensionsdir},{licensepath},{packinfopath}
+        include         {installscriptdir},{customtargetpath}/readlicense_oo/readme,{customtargetpath}/sysui/{pkgtype},{customtargetpath}/setup_native,{filelistpath}/PackageSet,{filelistpath}/GeneratedPackage,{filelistpath}/Package,{filelistpath}/ExtensionPackage,{extensionsdir},{licensepath},{packinfopath}
     }
 }
 
@@ -103,7 +105,7 @@ LibreOfficeDev
             UREPACKAGEPREFIX libreofficedev
             SOLSUREPACKAGEPREFIX libreofficedev
             REGISTRYLAYERNAME LayerDev
-            UPDATEURL https://update.libreoffice.org/check.php
+            UPDATEURL http://update.libreoffice.org/check.php
             ADD_INCLUDE_FILES cli_ure/version/version.txt,unoil/climaker/version.txt
             ADDSYSTEMINTEGRATION 1
             PACKAGEVERSION @LIBO_VERSION_MAJOR@.@LIBO_VERSION_MINOR@.@LIBO_VERSION_MICRO@.@LIBO_VERSION_PATCH@@LIBO_VERSION_SUFFIX@
@@ -126,7 +128,7 @@ LibreOfficeDev
         downloadname    LibreOfficeDev_{productversion}_{os}_install_{languages}
         langpackdownloadname    LibreOfficeDev_{productversion}_languagepack_{os}_install_{languages}
         helppackdownloadname    LibreOfficeDev_{productversion}_helppack_{os}_install_{languages}
-        include         {installscriptdir},{customtargetpath}/readlicense_oo/readme,{customtargetpath}/sysui/{pkgtype},{customtargetpath}/setup_native,{filelistpath}/PackageSet,{filelistpath}/GeneratedPackage,{filelistpath}/Package,{filelistpath}/ExtensionPackage,{filelistpath}/CustomTarget/helpcontent2/help3xsl/filelists,{extensionsdir},{licensepath},{packinfopath}
+        include         {installscriptdir},{customtargetpath}/readlicense_oo/readme,{customtargetpath}/sysui/{pkgtype},{customtargetpath}/setup_native,{filelistpath}/PackageSet,{filelistpath}/GeneratedPackage,{filelistpath}/Package,{filelistpath}/ExtensionPackage,{extensionsdir},{licensepath},{packinfopath}
     }
 }
 
