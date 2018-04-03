@@ -3308,6 +3308,12 @@ $(call gb_LinkTarget_add_libs,$(1),\
 	-L$(call gb_UnpackedTarball_get_dir,liborcus)/src/parser/.libs -lorcus-parser-0.16 \
 )
 
+ifneq ($(COM),MSC)
+$(call gb_LinkTarget_add_libs,$(1),\
+	-Lgumbo -lgumbo \
+)
+endif
+
 endef
 
 endif # MSC

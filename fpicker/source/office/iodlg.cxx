@@ -825,7 +825,13 @@ void SvtFileDialog::OpenHdl_Impl(void const * pVoid)
     {
         case FILEDLG_MODE_SAVE:
         {
+#if !defined(_WIN32)
+            OUString sSelectedFilterDisplayName;
+            pImpl->GetSelectedFilterEntry( sSelectedFilterDisplayName );
+            if ( ::utl::UCBContentHelper::Exists( aFileObj.GetMainURL( INetURLObject::DecodeMechanism::NONE ) ) && !(sSelectedFilterDisplayName == "Text - Plain text File Format (.txt)"))
+#else
             if ( ::utl::UCBContentHelper::Exists( aFileObj.GetMainURL( INetURLObject::DecodeMechanism::NONE ) ) )
+#endif
             {
                 OUString aMsg = FpsResId(STR_SVT_ALREADYEXISTOVERWRITE);
                 aMsg = aMsg.replaceFirst(

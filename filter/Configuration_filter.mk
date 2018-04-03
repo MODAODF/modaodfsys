@@ -789,6 +789,7 @@ $(eval $(call filter_Configuration_add_filters,fcfg_langpack,fcfg_impressgraphic
 	impress_eps_Export \
 	impress_gif_Export \
 	impress_html_Export \
+	impress_txt_Export \
 	impress_jpg_Export \
 	impress_png_Export \
 	impress_svg_Export \

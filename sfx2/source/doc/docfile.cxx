@@ -233,6 +233,172 @@ bool IsFileMovable(const INetURLObject& rURL)
 
 } // anonymous namespace
 
+#if !defined(_WIN32)
+/*
+ * Add convert to txt function
+ */
+#define enabled_html2txt 1
+#if enabled_html2txt
+
+/* gcc -O2 -Igumbo -static -o html2txt html2txt.c -Lgumbo -lgumbo */
+#include <ctype.h>
+#include <sys/stat.h>
+
+#include "gumbo.h"
+
+static char *
+read_stdin(char *file)
+{
+    char buffer[BUFSIZ];
+    char *output;
+    int extra;
+    int length = 0;
+    int bulk = 1024;
+
+    FILE *fp = fopen(file, "rb");
+    output = (char *) malloc(bulk);
+    strcpy(output, "");
+    while ((extra = fread(buffer, 1, BUFSIZ, fp))) {
+        while (length + extra > bulk - 1) {
+            bulk += bulk >> 1;
+            output = (char *) realloc(output, bulk);
+        }
+        strncat(output, buffer, extra);
+        length += strlen(buffer);
+    }
+    fclose(fp);
+    return output;
+}
+
+static void
+print_norm(const char *text, FILE *pDestFile)
+{
+    char *str, *token, *spaces;
+    int length, trailing;
+
+    const char *seps = " \t\n\r";
+    length = strlen(text);
+    str = (char *) malloc(length + 1);
+    strcpy(str, text);
+    spaces = str;
+    while (isspace(*spaces)) {
+        if (*spaces == ' ')
+            fprintf(pDestFile, " ");
+        spaces++;
+    }
+    trailing = 0;
+    spaces = str + length - 1;
+    while (isspace(*spaces)) {
+        if (*spaces == ' ')
+            trailing++;
+        spaces--;
+    }
+    token = strtok(str, seps);
+    fprintf(pDestFile, "%s",token);
+    token = strtok(NULL, seps);
+    while (token) {
+        fprintf(pDestFile, " %s", token);
+        token = strtok(NULL, seps);
+    }
+    while (trailing--)
+        fprintf(pDestFile, " ");
+    free(str);
+}
+
+static void
+print_tree(GumboNode *node, int plain, FILE *pDestFile)
+{
+    GumboVector *children;
+    GumboAttribute *href, *src, *alt;
+    int i;
+
+    if (node->type == GUMBO_NODE_TEXT) {
+        if (plain)
+            fprintf(pDestFile, "%s", node->v.text.text);
+        else
+            print_norm(node->v.text.text, pDestFile);
+    } else if (
+        node->type == GUMBO_NODE_ELEMENT &&
+        node->v.element.tag != GUMBO_TAG_SCRIPT &&
+        node->v.element.tag != GUMBO_TAG_STYLE
+    ) {
+        if (node->v.element.tag == GUMBO_TAG_BR) {
+            fprintf(pDestFile, "\n");
+            return;
+        }
+        plain = (
+            node->v.element.tag == GUMBO_TAG_CODE ||
+            node->v.element.tag == GUMBO_TAG_PRE
+        );
+        if (node->v.element.tag == GUMBO_TAG_LI)
+            fprintf(pDestFile, "* ");
+        if (
+            node->v.element.tag == GUMBO_TAG_H1 ||
+            node->v.element.tag == GUMBO_TAG_H2 ||
+            node->v.element.tag == GUMBO_TAG_H3 ||
+            node->v.element.tag == GUMBO_TAG_H4 ||
+            node->v.element.tag == GUMBO_TAG_H5 ||
+            node->v.element.tag == GUMBO_TAG_H6
+        )
+            fprintf(pDestFile, "\n\n");
+        children = &node->v.element.children;
+        for (i = 0; i < (int) children->length; i++)
+            print_tree((GumboNode *) children->data[i], plain, pDestFile);
+        if (
+            node->v.element.tag == GUMBO_TAG_TITLE ||
+            node->v.element.tag == GUMBO_TAG_H1 ||
+            node->v.element.tag == GUMBO_TAG_H2 ||
+            node->v.element.tag == GUMBO_TAG_H3 ||
+            node->v.element.tag == GUMBO_TAG_H4 ||
+            node->v.element.tag == GUMBO_TAG_H5 ||
+            node->v.element.tag == GUMBO_TAG_H6 ||
+            node->v.element.tag == GUMBO_TAG_P
+        )
+            fprintf(pDestFile, "\n\n");
+        else if (
+            node->v.element.tag == GUMBO_TAG_LI ||
+            node->v.element.tag == GUMBO_TAG_TR
+        )
+            fprintf(pDestFile, "\n");
+        else if (node->v.element.tag == GUMBO_TAG_TD)
+            fprintf(pDestFile, "\t");
+        else if (node->v.element.tag == GUMBO_TAG_A) {
+            href = gumbo_get_attribute(&node->v.element.attributes, "href");
+            if (href)
+                fprintf(pDestFile, " <%s>", href->value);
+        }
+        else if (node->v.element.tag == GUMBO_TAG_IMG) {
+            src = gumbo_get_attribute(&node->v.element.attributes, "src");
+            alt = gumbo_get_attribute(&node->v.element.attributes, "alt");
+            if (alt && strlen(alt->value))
+                fprintf(pDestFile, "\n{%s <%s>}\n", alt->value, src->value);
+            else
+                fprintf(pDestFile, "\n{<%s>}\n", src->value);
+        }
+    }
+}
+
+int ox_html2txt(char *srcpath, char *destpath)
+{
+    char *raw_html;
+    GumboOutput *parsed_html;
+
+    FILE *myDestFile = fopen(destpath,"wb");
+    raw_html = read_stdin(srcpath);
+    parsed_html = gumbo_parse(raw_html);
+
+    print_tree(parsed_html->root, 0, myDestFile);
+    fprintf(myDestFile, "\n");
+    gumbo_destroy_output(&kGumboDefaultOptions, parsed_html);
+    fclose(myDestFile);
+    free(raw_html);
+    return 0;
+}
+
+#endif /*enabled_html2txt*/
+#endif /*_WIN32*/
+
+
 class SfxMedium_Impl
 {
 public:
@@ -2184,6 +2350,27 @@ void SfxMedium::Transfer_Impl()
     if ( comphelper::isFileUrl( aDestURL ) || !aDest.removeSegment() )
     {
         TransactedTransferForFS_Impl( aSource, aDest, xComEnv );
+			#if !defined(_WIN32)
+				#if enabled_html2txt
+						if (aDest.GetExtension() == "htmltmp"){
+							#define maxsize 256
+							char Srcbuf [maxsize];
+							char Dstbuf [maxsize];
+							char SavePath[maxsize];
+							char SaveBase[maxsize];
+
+							snprintf (SavePath, maxsize, "%s", OUStringToOString( aDest.GetPath(), RTL_TEXTENCODING_UTF8 ).getStr());
+							snprintf (SaveBase, maxsize, "%s", OUStringToOString( aDest.GetBase(), RTL_TEXTENCODING_UTF8 ).getStr());
+
+							snprintf (Srcbuf, maxsize, "%s/%s.htmltmp", SavePath,SaveBase);
+							//~ snprintf (Srcbuf, maxsize, "file:///tmp/html2txt.html");
+							snprintf (Dstbuf, maxsize, "%s/%s.txt", SavePath,SaveBase);
+
+							ox_html2txt(Srcbuf, Dstbuf);
+							unlink(Srcbuf);
+						}
+				#endif
+			#endif
 
         if (!pImpl->m_bDisableFileSync)
         {

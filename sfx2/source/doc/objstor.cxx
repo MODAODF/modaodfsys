@@ -1656,6 +1656,14 @@ bool SfxObjectShell::SaveTo_Impl
         }
 
         const OUString sName( rMedium.GetName( ) );
+#if !defined(_WIN32)
+        // make_tempfile
+        // To do if select export txt need SwitchDocumentToTempFile
+        OUString aFilterName( rMedium.GetFilter()->GetFilterName() );
+        if(aFilterName == "impress_txt_Export"){
+            rMedium.SwitchDocumentToTempFile();
+        }
+#endif
         bOk = rMedium.Commit();
         const OUString sNewName( rMedium.GetName( ) );
 

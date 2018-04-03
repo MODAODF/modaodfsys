@@ -1148,6 +1148,10 @@ namespace sfx2
         if ( sRet.indexOf( "(*.*)" ) == -1 )
         {
             OUString sExt = _rExtension;
+#if !defined(_WIN32)
+            if (_rDisplayText == "Text - Plain text File Format")
+                sExt = "*.txt";
+#endif
             if ( !_bForOpen )
             {
                 // show '*' in extensions only when opening a document

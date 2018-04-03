@@ -1002,7 +1002,10 @@ bool ModelData_Impl::OutputFileDialog( sal_Int16 nStoreMode,
     // the path should be provided outside since it might be used for further calls to the dialog
     aSuggestedName = aURL.GetLastName(INetURLObject::DecodeMechanism::WithCharset);
     aSuggestedDir = pFileDlg->GetDisplayDirectory();
-
+#if !defined(_WIN32)
+    // Why add extension tmp?
+    aSuggestedName += "tmp";
+#endif
     // old filter options should be cleared in case different filter is used
 
     const OUString aFilterFromMediaDescr = GetMediaDescr().getUnpackedValueOrDefault( sFilterNameString, OUString() );
@@ -1574,6 +1577,11 @@ bool SfxStoringHelper::GUIStoreModel( const uno::Reference< frame::XModel >& xMo
     {
         OUString aFileName;
         aFileNameIter->second >>= aFileName;
+#if !defined(_WIN32)
+        OUString bFilterUIName = aModelData.GetMediaDescr().getUnpackedValueOrDefault(sFilterNameString,OUString() );
+        if(bFilterUIName == "impress_txt_Export")
+            aFileName += "tmp";
+#endif
         aURL.SetURL( aFileName );
         DBG_ASSERT( aURL.GetProtocol() != INetProtocol::NotValid, "Illegal URL!" );
 
