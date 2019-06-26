@@ -80,6 +80,15 @@ private:
     std::unique_ptr<weld::Button> mxBtnOK;
     std::unique_ptr<weld::Button> mxBtnCancel;
 
+    std::unique_ptr<weld::Button> mxBtnPageAdd;
+    std::unique_ptr<weld::Button> mxBtnPageRemove;
+    std::unique_ptr<weld::Button> mxBtnColumnAdd;
+    std::unique_ptr<weld::Button> mxBtnColumnRemove;
+    std::unique_ptr<weld::Button> mxBtnDataAdd;
+    std::unique_ptr<weld::Button> mxBtnDataRemove;
+    std::unique_ptr<weld::Button> mxBtnRowAdd;
+    std::unique_ptr<weld::Button> mxBtnRowRemove;
+
     std::unique_ptr<weld::Frame> mxSourceFrame;
     std::unique_ptr<weld::Label> mxSourceLabel;
     std::unique_ptr<weld::Frame> mxDestFrame;
@@ -98,6 +107,14 @@ private:
     DECL_LINK(ToggleDestination, weld::ToggleButton&, void);
     DECL_LINK(SourceListSelected, weld::ComboBox&, void);
     DECL_LINK(SourceEditModified, formula::RefEdit&, void);
+    DECL_LINK(PageAddCommandHdl, weld::Button&, void );
+    DECL_LINK(PageRemoveCommandHdl, weld::Button&, void );
+    DECL_LINK(ColumnAddCommandHdl, weld::Button&, void );
+    DECL_LINK(ColumnRemoveCommandHdl, weld::Button&, void );
+    DECL_LINK(DataAddCommandHdl, weld::Button&, void );
+    DECL_LINK(DataRemoveCommandHdl, weld::Button&, void );
+    DECL_LINK(RowAddCommandHdl, weld::Button&, void );
+    DECL_LINK(RowRemoveCommandHdl, weld::Button&, void );
     void ToggleSource();
     void ToggleDestination();
     virtual void Close() override;

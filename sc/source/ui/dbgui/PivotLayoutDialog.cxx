@@ -109,6 +109,14 @@ ScPivotLayoutDialog::ScPivotLayoutDialog(
     , mxDestLabel(mxDestFrame->weld_label_widget())
     , mxOptions(m_xBuilder->weld_expander("options"))
     , mxMore(m_xBuilder->weld_expander("more"))
+    , mxBtnPageAdd(m_xBuilder->weld_button("page-add-btn"))
+    , mxBtnPageRemove(m_xBuilder->weld_button("page-remove-btn"))
+    , mxBtnColumnAdd(m_xBuilder->weld_button("column-add-btn"))
+    , mxBtnColumnRemove(m_xBuilder->weld_button("column-remove-btn"))
+    , mxBtnDataAdd(m_xBuilder->weld_button("data-add-btn"))
+    , mxBtnDataRemove(m_xBuilder->weld_button("data-remove-btn"))
+    , mxBtnRowAdd(m_xBuilder->weld_button("row-add-btn"))
+    , mxBtnRowRemove(m_xBuilder->weld_button("row-remove-btn"))
 {
     // Source UI
     Link<weld::ToggleButton&,void> aLink2 = LINK(this, ScPivotLayoutDialog, ToggleSource);
@@ -149,6 +157,16 @@ ScPivotLayoutDialog::ScPivotLayoutDialog(
     // Buttons
     mxBtnCancel->connect_clicked(LINK(this, ScPivotLayoutDialog, CancelClicked));
     mxBtnOK->connect_clicked(LINK(this, ScPivotLayoutDialog, OKClicked));
+
+    // Add/Remove Buttons
+    mxBtnPageAdd->connect_clicked(LINK(this, ScPivotLayoutDialog, PageAddCommandHdl));
+    mxBtnPageRemove->connect_clicked(LINK(this, ScPivotLayoutDialog, PageRemoveCommandHdl));
+    mxBtnColumnAdd->connect_clicked(LINK(this, ScPivotLayoutDialog, ColumnAddCommandHdl));
+    mxBtnColumnRemove->connect_clicked(LINK(this, ScPivotLayoutDialog, ColumnRemoveCommandHdl));
+    mxBtnDataAdd->connect_clicked(LINK(this, ScPivotLayoutDialog, DataAddCommandHdl));
+    mxBtnDataRemove->connect_clicked(LINK(this, ScPivotLayoutDialog, DataRemoveCommandHdl));
+    mxBtnRowAdd->connect_clicked(LINK(this, ScPivotLayoutDialog, RowAddCommandHdl));
+    mxBtnRowRemove->connect_clicked(LINK(this, ScPivotLayoutDialog, RowRemoveCommandHdl));
 
     // Initialize Data
     maPivotTableObject.FillOldParam(maPivotParameters);
@@ -645,6 +663,79 @@ IMPL_LINK_NOARG( ScPivotLayoutDialog, CancelClicked, weld::Button&, void )
 {
     m_xDialog->response(RET_CANCEL);
 }
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, PageAddCommandHdl, weld::Button&, void )
+{
+    //~ if (!this || !this->mxListBoxField)
+        //~ return false;
+    weld::TreeView& rSource = this->mxListBoxField->get_widget();
+    int nEntry = rSource.get_cursor_index();
+    if (nEntry != -1)
+        mxListBoxPage->InsertEntryForSourceTargetAddMode( rSource, -1);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, PageRemoveCommandHdl, weld::Button&, void )
+{
+    weld::TreeView& rSource = this->mxListBoxPage->get_widget();
+    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+
+    mxListBoxPage->RemoveEntryForItem(pItemValue);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, ColumnAddCommandHdl, weld::Button&, void )
+{
+    //~ if (!this || !this->mxListBoxField)
+        //~ return false;
+    weld::TreeView& rSource = this->mxListBoxField->get_widget();
+    int nEntry = rSource.get_cursor_index();
+    if (nEntry != -1)
+        mxListBoxColumn->InsertEntryForSourceTargetAddMode( rSource, -1);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, ColumnRemoveCommandHdl, weld::Button&, void )
+{
+    weld::TreeView& rSource = this->mxListBoxColumn->get_widget();
+    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+
+    mxListBoxColumn->RemoveEntryForItem(pItemValue);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, DataAddCommandHdl, weld::Button&, void )
+{
+    //~ if (!this || !this->mxListBoxField)
+        //~ return false;
+    weld::TreeView& rSource = this->mxListBoxField->get_widget();
+    int nEntry = rSource.get_cursor_index();
+    if (nEntry != -1)
+        mxListBoxData->InsertEntryForSourceTargetAddMode( rSource, -1);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, DataRemoveCommandHdl, weld::Button&, void )
+{
+    weld::TreeView& rSource = this->mxListBoxData->get_widget();
+    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+
+    mxListBoxData->RemoveEntryForItem(pItemValue);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, RowAddCommandHdl, weld::Button&, void )
+{
+    //~ if (!this || !this->mxListBoxField)
+        //~ return false;
+    weld::TreeView& rSource = this->mxListBoxField->get_widget();
+    int nEntry = rSource.get_cursor_index();
+    if (nEntry != -1)
+        mxListBoxRow->InsertEntryForSourceTargetAddMode( rSource, -1);
+}
+
+IMPL_LINK_NOARG( ScPivotLayoutDialog, RowRemoveCommandHdl, weld::Button&, void )
+{
+    weld::TreeView& rSource = this->mxListBoxRow->get_widget();
+    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+
+    mxListBoxRow->RemoveEntryForItem(pItemValue);
+}
+
 
 IMPL_LINK(ScPivotLayoutDialog, GetEditFocusHandler, formula::RefEdit&, rCtrl, void)
 {

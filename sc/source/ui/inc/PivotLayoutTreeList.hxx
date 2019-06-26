@@ -29,6 +29,8 @@ public:
 
     void Setup(ScPivotLayoutDialog* pParent, SvPivotTreeListType eType);
     void FillFields(ScPivotFieldVector& rFieldVector);
+    void InsertEntryForSourceTargetAddMode(weld::TreeView& rSource, int nTarget);
+    void RemoveEntry(weld::TreeView& rSource);
 
     virtual void InsertEntryForSourceTarget(weld::TreeView& rSource, int nTarget) override;
 

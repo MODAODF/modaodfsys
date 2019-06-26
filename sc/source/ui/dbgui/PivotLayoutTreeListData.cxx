@@ -193,6 +193,35 @@ void ScPivotLayoutTreeListData::InsertEntryForSourceTarget(weld::TreeView& rSour
     }
 }
 
+void ScPivotLayoutTreeListData::InsertEntryForSourceTargetAddMode(weld::TreeView& rSource, int nTarget)
+{
+    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+
+    if (mpParent->IsDataElement(pItemValue->maFunctionData.mnCol))
+        return;
+
+    if (&rSource == mxControl.get())
+    {
+        OUString sText = mxControl->get_selected_text();
+        OUString sId(OUString::number(reinterpret_cast<sal_Int64>(pItemValue)));
+        mxControl->remove_id(sId);
+        mxControl->insert(nullptr, nTarget, &sText, &sId, nullptr, nullptr, false, nullptr);
+    }
+    else
+    {
+        InsertEntryForItem(pItemValue->mpOriginalItemValue, nTarget);
+    }
+}
+
+void ScPivotLayoutTreeListData::RemoveEntry(weld::TreeView& rSource)
+{
+    if (&rSource == mxControl.get()) {
+        ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
+        OUString sId(OUString::number(reinterpret_cast<sal_Int64>(pItemValue)));
+        mxControl->remove_id(sId);
+    }
+}
+
 void ScPivotLayoutTreeListData::InsertEntryForItem(ScItemValue* pItemValue, int nPosition)
 {
     ScItemValue* pDataItemValue = new ScItemValue(pItemValue);

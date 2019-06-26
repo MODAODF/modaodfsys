@@ -457,7 +457,6 @@ void ScGridWindow::DPLaunchFieldPopupMenu(const Point& rScrPos, const Size& rScr
     if (!pDim)
         // This should never happen.
         return;
-
     bool bDimOrientNotPage = pDim->GetOrientation() != DataPilotFieldOrientation_PAGE;
 
     // We need to get the list of field members.
@@ -465,11 +464,12 @@ void ScGridWindow::DPLaunchFieldPopupMenu(const Point& rScrPos, const Size& rScr
     pDPData->mpDPObj = pDPObj;
 
     const ScDPLabelData& rLabelData = pDPData->maLabels;
-
     mpDPFieldPopup.disposeAndClear();
     mpDPFieldPopup.reset(VclPtr<ScCheckListMenuWindow>::Create(this, &mrViewData.GetDocument(),
                                                                bDimOrientNotPage, false));
 
+    if (comphelper::LibreOfficeKit::isActive())
+        mpDPFieldPopup->SetLOKNotifier(SfxViewShell::Current());
     ScCheckListMenuControl& rControl = mpDPFieldPopup->get_widget();
     rControl.setExtendedData(std::move(pDPData));
     rControl.setOKAction(new DPFieldPopupOKAction(this));
@@ -488,7 +488,6 @@ void ScGridWindow::DPLaunchFieldPopupMenu(const Point& rScrPos, const Size& rScr
                 rControl.addMember(rMem.getDisplayName(), rMem.mbVisible);
         }
     }
-
     if (bDimOrientNotPage)
     {
         vector<OUString> aUserSortNames;
@@ -503,7 +502,6 @@ void ScGridWindow::DPLaunchFieldPopupMenu(const Point& rScrPos, const Size& rScr
                 aUserSortNames.push_back(rData.GetString());
             }
         }
-
         // Populate the menus.
         ScTabViewShell* pViewShell = mrViewData.GetViewShell();
         rControl.addMenuItem(
@@ -512,23 +510,24 @@ void ScGridWindow::DPLaunchFieldPopupMenu(const Point& rScrPos, const Size& rScr
         rControl.addMenuItem(
             ScResId(STR_MENU_SORT_DESC),
             new PopupSortAction(pDPObj, nDimIndex, PopupSortAction::DESCENDING, 0, pViewShell));
-
-        ScCheckListMenuWindow* pSubMenu = rControl.addSubMenuItem(ScResId(STR_MENU_SORT_CUSTOM), !aUserSortNames.empty());
-        if (pSubMenu)
+        if (!comphelper::LibreOfficeKit::isActive())
         {
-            ScCheckListMenuControl& rSubMenu = pSubMenu->get_widget();
-            size_t n = aUserSortNames.size();
-            for (size_t i = 0; i < n; ++i)
+            ScCheckListMenuWindow* pSubMenu = rControl.addSubMenuItem(ScResId(STR_MENU_SORT_CUSTOM), !aUserSortNames.empty());
+            if (pSubMenu)
             {
-                rSubMenu.addMenuItem(aUserSortNames[i],
-                                     new PopupSortAction(pDPObj, nDimIndex, PopupSortAction::CUSTOM, sal_uInt16(i), pViewShell));
+                ScCheckListMenuControl& rSubMenu = pSubMenu->get_widget();
+                size_t n = aUserSortNames.size();
+                for (size_t i = 0; i < n; ++i)
+                {
+                    rSubMenu.addMenuItem(aUserSortNames[i],
+                                         new PopupSortAction(pDPObj, nDimIndex, PopupSortAction::CUSTOM, sal_uInt16(i), pViewShell));
+                }
+                rSubMenu.resizeToFitMenuItems();
             }
-            rSubMenu.resizeToFitMenuItems();
         }
     }
 
     rControl.initMembers();
-
     tools::Rectangle aCellRect(rScrPos, rScrSize);
 
     ScCheckListMenuControl::Config aConfig;

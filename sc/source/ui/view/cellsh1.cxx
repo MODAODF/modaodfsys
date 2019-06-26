@@ -2923,7 +2923,10 @@ void ScCellShell::ExecuteDataPilotDialog()
                 pTypeDlg->AppendNamedRange(itr->second->GetName());
         }
 
-        if ( pTypeDlg->Execute() == RET_OK )
+        if (!comphelper::LibreOfficeKit::isActive())
+            pTypeDlg->Execute();
+
+        if (RET_OK)
         {
             if ( pTypeDlg->IsExternal() )
             {
