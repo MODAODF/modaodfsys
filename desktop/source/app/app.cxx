@@ -387,6 +387,7 @@ OUString ReplaceStringHookProc( const OUString& rStr )
         sAboutBoxVersion(utl::ConfigManager::getAboutBoxProductVersion()),
         sAboutBoxVersionSuffix(utl::ConfigManager::getAboutBoxProductVersionSuffix()),
         sExtension(utl::ConfigManager::getProductExtension());
+    const static OUString sOxofficeVersion(utl::ConfigManager::getOxofficeVersion());
 
     OUString sRet(rStr);
     if (sRet.indexOf("%PRODUCT") != -1 || sRet.indexOf("%ABOUTBOX") != -1)
@@ -397,6 +398,7 @@ OUString ReplaceStringHookProc( const OUString& rStr )
         sRet = sRet.replaceAll( "%ABOUTBOXPRODUCTVERSIONSUFFIX", sAboutBoxVersionSuffix );
         sRet = sRet.replaceAll( "%ABOUTBOXPRODUCTVERSION", sAboutBoxVersion );
         sRet = sRet.replaceAll( "%PRODUCTEXTENSION", sExtension );
+        sRet = sRet.replaceAll( "%OXOFFICEVERSION", sOxofficeVersion );
     }
 
     if ( sRet.indexOf( "%OOOVENDOR" ) != -1 )

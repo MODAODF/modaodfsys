@@ -37,6 +37,9 @@
     <prop oor:name="ooSetupExtension">
       <value>${PRODUCTEXTENSION}</value>
     </prop>
+    <prop oor:name="ooSetupVersionOxoffice">
+      <value>${OXOFFICEVERSION}</value>
+    </prop>
     <prop oor:name="ooBaseonVersion">
       <value>${BASEONVERSION}</value>
     </prop>

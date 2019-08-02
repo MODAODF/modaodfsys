@@ -101,6 +101,10 @@ OUString utl::ConfigManager::getProductName() {
     return officecfg::Setup::Product::ooName::get();
 }
 
+OUString utl::ConfigManager::getOxofficeVersion() {
+    return officecfg::Setup::Product::ooSetupVersionOxoffice::get();
+}
+
 OUString utl::ConfigManager::getProductVersion() {
     return officecfg::Setup::Product::ooSetupVersion::get();
 }

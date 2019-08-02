@@ -49,6 +49,8 @@ public:
 
     static OUString getProductExtension();
 
+    static OUString getOxofficeVersion();
+
     static OUString getProductName();
 
     static OUString getProductVersion();
