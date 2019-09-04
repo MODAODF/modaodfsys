@@ -63,6 +63,7 @@
 
 #include <svl/cjkoptions.hxx>
 #include <tools/diagnose_ex.h>
+#include <comphelper/lok.hxx>
 
 namespace com::sun::star::chart2 { class XChartType; }
 namespace com::sun::star::chart2 { class XDataSeries; }
@@ -349,7 +350,7 @@ SchAttribTabDlg::SchAttribTabDlg(weld::Window* pParent,
             AddTabPage("fontname", SchResId(STR_PAGE_FONT), RID_SVXPAGE_CHAR_NAME);
             AddTabPage("effects", SchResId(STR_PAGE_FONT_EFFECTS), RID_SVXPAGE_CHAR_EFFECTS);
             AddTabPage("alignment", SchResId(STR_PAGE_ALIGNMENT), SchAlignmentTabPage::Create);
-            if( aCJKOptions.IsAsianTypographyEnabled() )
+            if( aCJKOptions.IsAsianTypographyEnabled() && !comphelper::LibreOfficeKit::isActive())
                 AddTabPage("asian", SchResId(STR_PAGE_ASIAN), RID_SVXPAGE_PARA_ASIAN);
             break;
 
@@ -360,7 +361,7 @@ SchAttribTabDlg::SchAttribTabDlg(weld::Window* pParent,
             AddTabPage("fontname", SchResId(STR_PAGE_FONT), RID_SVXPAGE_CHAR_NAME);
             AddTabPage("effects", SchResId(STR_PAGE_FONT_EFFECTS), RID_SVXPAGE_CHAR_EFFECTS);
             AddTabPage("legendpos", SchResId(STR_PAGE_POSITION), SchLegendPosTabPage::Create);
-            if (aCJKOptions.IsAsianTypographyEnabled())
+            if (aCJKOptions.IsAsianTypographyEnabled() && !comphelper::LibreOfficeKit::isActive())
                 AddTabPage("asian", SchResId(STR_PAGE_ASIAN), RID_SVXPAGE_PARA_ASIAN);
             break;
 
@@ -390,7 +391,7 @@ SchAttribTabDlg::SchAttribTabDlg(weld::Window* pParent,
             AddTabPage("datalabels", SchResId(STR_OBJECT_DATALABELS), DataLabelsTabPage::Create);
             AddTabPage("fontname", SchResId(STR_PAGE_FONT), RID_SVXPAGE_CHAR_NAME);
             AddTabPage("effects", SchResId(STR_PAGE_FONT_EFFECTS), RID_SVXPAGE_CHAR_EFFECTS);
-            if( aCJKOptions.IsAsianTypographyEnabled() )
+            if( aCJKOptions.IsAsianTypographyEnabled() && !comphelper::LibreOfficeKit::isActive())
                 AddTabPage("asian", SchResId(STR_PAGE_ASIAN), RID_SVXPAGE_PARA_ASIAN);
 
             break;
@@ -409,7 +410,7 @@ SchAttribTabDlg::SchAttribTabDlg(weld::Window* pParent,
                 AddTabPage("numberformat", SchResId(STR_PAGE_NUMBERS), RID_SVXPAGE_NUMBERFORMAT);
             AddTabPage("fontname", SchResId(STR_PAGE_FONT), RID_SVXPAGE_CHAR_NAME);
             AddTabPage("effects", SchResId(STR_PAGE_FONT_EFFECTS), RID_SVXPAGE_CHAR_EFFECTS);
-            if( aCJKOptions.IsAsianTypographyEnabled() )
+            if( aCJKOptions.IsAsianTypographyEnabled() && !comphelper::LibreOfficeKit::isActive())
                 AddTabPage("asian", SchResId(STR_PAGE_ASIAN), RID_SVXPAGE_PARA_ASIAN);
             break;
         }

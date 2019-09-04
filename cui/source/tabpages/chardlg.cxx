@@ -224,7 +224,7 @@ SvxCharNamePage::SvxCharNamePage(weld::Container* pPage, weld::DialogController*
     , m_xEastFontLanguageFT(m_xBuilder->weld_label("eastlangft"))
     , m_xEastFontLanguageLB(new SvxLanguageBox(m_xBuilder->weld_combo_box("eastlanglb")))
     , m_xEastFontTypeFT(m_xBuilder->weld_label("eastfontinfo"))
-    , m_xEastFontFeaturesButton(m_xBuilder->weld_button("east_features_button"))
+    //, m_xEastFontFeaturesButton(m_xBuilder->weld_button("east_features_button"))
     , m_xCTLFrame(m_xBuilder->weld_widget("ctl"))
     , m_xCTLFontNameFT(m_xBuilder->weld_label("ctlfontnameft"))
     , m_xCTLFontNameLB(m_xBuilder->weld_combo_box("ctlfontnamelb"))
@@ -235,7 +235,7 @@ SvxCharNamePage::SvxCharNamePage(weld::Container* pPage, weld::DialogController*
     , m_xCTLFontLanguageFT(m_xBuilder->weld_label("ctllangft"))
     , m_xCTLFontLanguageLB(new SvxLanguageBox(m_xBuilder->weld_combo_box("ctllanglb")))
     , m_xCTLFontTypeFT(m_xBuilder->weld_label("ctlfontinfo"))
-    , m_xCTLFontFeaturesButton(m_xBuilder->weld_button("ctl_features_button"))
+    //, m_xCTLFontFeaturesButton(m_xBuilder->weld_button("ctl_features_button"))
 {
     m_xPreviewWin.reset(new weld::CustomWeld(*m_xBuilder, "preview", m_aPreviewWin));
 #ifdef IOS
@@ -263,7 +263,7 @@ SvxCharNamePage::SvxCharNamePage(weld::Container* pPage, weld::DialogController*
         m_xWestFontLanguageLB.reset(new SvxLanguageBox(m_xBuilder->weld_combo_box("westlanglb-cjk")));
         m_xWestFontTypeFT = m_xBuilder->weld_label("westfontinfo-cjk");
 
-        m_xWestFontFeaturesButton = m_xBuilder->weld_button("west_features_button-cjk");
+        //m_xWestFontFeaturesButton = m_xBuilder->weld_button("west_features_button-cjk");
     }
     else
     {
@@ -276,7 +276,7 @@ SvxCharNamePage::SvxCharNamePage(weld::Container* pPage, weld::DialogController*
         m_xWestFontLanguageLB.reset(new SvxLanguageBox(m_xBuilder->weld_combo_box("westlanglb-nocjk")));
         m_xWestFontTypeFT = m_xBuilder->weld_label("westfontinfo-nocjk");
 
-        m_xWestFontFeaturesButton = m_xBuilder->weld_button("west_features_button-nocjk");
+        //m_xWestFontFeaturesButton = m_xBuilder->weld_button("west_features_button-nocjk");
 
         std::unique_ptr<weld::EntryTreeView> xWestFontNameLB = m_xBuilder->weld_entry_tree_view("namegrid", "westfontname-nocjk", "westfontnamelb-nocjk");
         std::unique_ptr<weld::EntryTreeView> xWestFontStyleLB = m_xBuilder->weld_entry_tree_view("stylegrid", "weststyle-nocjk", "weststylelb-nocjk");
@@ -356,19 +356,19 @@ void SvxCharNamePage::Initialize()
     m_xWestFontSizeLB->connect_changed(aLink);
     m_xWestFontLanguageLB->connect_changed(aLink);
 
-    m_xWestFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
+    //~ m_xWestFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
 
     m_xEastFontNameLB->connect_changed(aLink);
     m_xEastFontStyleLB->connect_changed(aLink);
     m_xEastFontSizeLB->connect_changed(aLink);
     m_xEastFontLanguageLB->connect_changed(aLink);
-    m_xEastFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
+    //~ m_xEastFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
 
     m_xCTLFontNameLB->connect_changed(aLink);
     m_xCTLFontStyleLB->connect_changed(aLink);
     m_xCTLFontSizeLB->connect_changed(aLink);
     m_xCTLFontLanguageLB->connect_changed(aLink);
-    m_xCTLFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
+    //~ m_xCTLFontFeaturesButton->connect_clicked(LINK(this, SvxCharNamePage, FontFeatureButtonClicked));
 
     m_pImpl->m_aUpdateIdle.SetInvokeHandler( LINK( this, SvxCharNamePage, UpdateHdl_Impl ) );
 }
@@ -1133,7 +1133,7 @@ IMPL_LINK(SvxCharNamePage, FontModifyComboBoxHdl_Impl, weld::ComboBox&, rBox, vo
 
 IMPL_LINK(SvxCharNamePage, FontFeatureButtonClicked, weld::Button&, rButton, void)
 {
-    OUString sFontName;
+    /*OUString sFontName;
     weld::ComboBox* pNameBox = nullptr;
 
     if (&rButton == m_xWestFontFeaturesButton.get())
@@ -1160,7 +1160,7 @@ IMPL_LINK(SvxCharNamePage, FontFeatureButtonClicked, weld::Button&, rButton, voi
             pNameBox->set_entry_text(aDialog.getResultFontName());
             UpdatePreview_Impl();
         }
-    }
+    }*/
 }
 
 void SvxCharNamePage::FontModifyHdl_Impl(const weld::Widget& rNameBox)

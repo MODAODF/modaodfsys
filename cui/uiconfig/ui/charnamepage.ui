@@ -453,6 +453,7 @@
                 <property name="position">0</property>
               </packing>
             </child>
+<!--
             <child>
               <object class="GtkButton" id="west_features_button-nocjk">
                 <property name="label" translatable="yes" context="charnamepage|west_features_button-nocjk">Features...</property>
@@ -468,6 +469,7 @@
                 <property name="position">1</property>
               </packing>
             </child>
+-->
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -674,6 +676,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+<!--
                     <child>
                       <object class="GtkButton" id="west_features_button-cjk">
                         <property name="label" translatable="yes" context="charnamepage|west_features_button-cjk">Features...</property>
@@ -687,6 +690,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+-->
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -904,6 +908,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+<!--
                     <child>
                       <object class="GtkButton" id="east_features_button">
                         <property name="label" translatable="yes" context="charnamepage|east_features_button">Features...</property>
@@ -917,6 +922,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+-->
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -1135,6 +1141,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+<!--
                     <child>
                       <object class="GtkButton" id="ctl_features_button">
                         <property name="label" translatable="yes" context="charnamepage|ctl_features_button">Features...</property>
@@ -1148,6 +1155,7 @@
                         <property name="top_attach">0</property>
                       </packing>
                     </child>
+-->
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
