@@ -74,6 +74,12 @@ public:
 
     FontCharMapRef GetFontCharMap() const override;
     bool GetFontCapabilities(vcl::FontCapabilities&) const override;
+    // add user fonts
+    void                    AddUserFont(HKEY, OUString const &, PhysicalFontCollection*);
+    // set user fonts
+    void                    SetUserFont(OUString, PhysicalFontCollection*);
+    // get registry subkeys
+    void                    getsubkeys(HKEY, OUString const &, PhysicalFontCollection*);
 
 private:
     sal_IntPtr              mnId;
