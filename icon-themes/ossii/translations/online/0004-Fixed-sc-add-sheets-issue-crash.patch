@@ -1,0 +1,29 @@
+From 470dd4bd07a6e9a4763fe4f52a53757051e8effc Mon Sep 17 00:00:00 2001
+From: AlanTom <alan.tang@ossii.com.tw>
+Date: Tue, 10 Dec 2019 10:44:22 +0800
+Subject: [PATCH 4/4] Fixed sc add sheets issue crash
+
+Change-Id: I4dfb75896883e74e85954ca756090c4cb47405e8
+---
+ source/zh-TW/sc/messages.po | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/source/zh-TW/sc/messages.po b/source/zh-TW/sc/messages.po
+index e423d8c..58b0b5d 100644
+--- a/source/zh-TW/sc/messages.po
++++ b/source/zh-TW/sc/messages.po
+@@ -1232,11 +1232,6 @@ msgctxt "STR_IMPORT_DIF"
+ msgid "Dif Import"
+ msgstr "DIF 匯入"
+ 
+-#: sc/inc/globstr.hrc:272
+-msgctxt "STR_STYLENAME_STANDARD"
+-msgid "Default"
+-msgstr "預設"
+-
+ #: sc/inc/globstr.hrc:273
+ msgctxt "STR_STYLENAME_RESULT"
+ msgid "Result"
+-- 
+1.8.3.1
+

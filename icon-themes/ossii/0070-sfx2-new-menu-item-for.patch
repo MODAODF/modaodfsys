@@ -1,0 +1,140 @@
+From a1a238de86b80c08f4ed368f4860a647f4d696bd Mon Sep 17 00:00:00 2001
+From: alan <alan.tang@ossii.com>
+Date: Tue, 24 Apr 2018 11:50:56 +0800
+Subject: [PATCH] =?UTF-8?q?sfx2:=20new=20menu=20item=20for=20=E7=B7=9A?=
+ =?UTF-8?q?=E4=B8=8A=E6=96=87=E4=BB=B6=E9=80=A3=E7=B5=90?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Change-Id: I2103efa34800065b78bc704e561c1347cae65109
+---
+ include/sfx2/sfxsids.hrc                           |  1 +
+ .../org/openoffice/Office/UI/GenericCommands.xcu   |  5 +++++
+ sfx2/sdi/appslots.sdi                              |  4 ++++
+ sfx2/sdi/sfx.sdi                                   | 24 ++++++++++++++++++++++
+ sfx2/source/appl/appserv.cxx                       | 15 ++++++++++++++
+ 5 files changed, 49 insertions(+)
+ mode change 100644 => 100755 include/sfx2/sfxsids.hrc
+ mode change 100644 => 100755 officecfg/registry/data/org/openoffice/Office/UI/GenericCommands.xcu
+ mode change 100644 => 100755 sfx2/sdi/appslots.sdi
+ mode change 100644 => 100755 sfx2/sdi/sfx.sdi
+ mode change 100644 => 100755 sfx2/source/appl/appserv.cxx
+
+diff --git a/include/sfx2/sfxsids.hrc b/include/sfx2/sfxsids.hrc
+old mode 100644
+new mode 100755
+index 043902f5b..0e0f5daec
+--- a/include/sfx2/sfxsids.hrc
++++ b/include/sfx2/sfxsids.hrc
+@@ -86,6 +86,7 @@
+ #define SID_Q_AND_A                         (SID_SFX_START + 422)
+ #define SID_DOCUMENTATION                   (SID_SFX_START + 423)
+ #define SID_DONATION                        (SID_SFX_START + 424)
++#define SID_ONLINE_RESOURCE                 (SID_SFX_START + 425)
+ #define SID_SHOW_LICENSE                    (SID_SFX_START + 1683)
+ #define SID_SHOW_CREDITS                    (SID_SFX_START + 1711)
+ 
+diff --git a/officecfg/registry/data/org/openoffice/Office/UI/GenericCommands.xcu b/officecfg/registry/data/org/openoffice/Office/UI/GenericCommands.xcu
+old mode 100644
+new mode 100755
+index d9ba29817..aa1e90369
+--- a/officecfg/registry/data/org/openoffice/Office/UI/GenericCommands.xcu
++++ b/officecfg/registry/data/org/openoffice/Office/UI/GenericCommands.xcu
+@@ -4921,6 +4921,11 @@
+           <value xml:lang="en-US">Send Feedback...</value>
+         </prop>
+       </node>
++      <node oor:name=".uno:OnlineResource" oor:op="replace">
++        <prop oor:name="Label" oor:type="xs:string">
++          <value xml:lang="en-US">Online Resource...</value>
++        </prop>
++      </node>
+       <node oor:name=".uno:QuestionAnswers" oor:op="replace">
+         <prop oor:name="Label" oor:type="xs:string">
+           <value xml:lang="en-US">~Get Help Online...</value>
+diff --git a/sfx2/sdi/appslots.sdi b/sfx2/sdi/appslots.sdi
+old mode 100644
+new mode 100755
+index da6d08440..83f346a65
+--- a/sfx2/sdi/appslots.sdi
++++ b/sfx2/sdi/appslots.sdi
+@@ -132,6 +132,10 @@ interface Application
+     [
+         ExecMethod = MiscExec_Impl ;
+     ]
++    SID_ONLINE_RESOURCE
++    [
++        ExecMethod = MiscExec_Impl ;
++    ]
+     SID_SHOW_LICENSE
+     [
+         ExecMethod = MiscExec_Impl ;
+diff --git a/sfx2/sdi/sfx.sdi b/sfx2/sdi/sfx.sdi
+old mode 100644
+new mode 100755
+index e00cd9aec..2b667ac4d
+--- a/sfx2/sdi/sfx.sdi
++++ b/sfx2/sdi/sfx.sdi
+@@ -5474,6 +5474,30 @@ SfxVoidItem SafeMode SID_SAFE_MODE
+     GroupId = SfxGroupId::Application;
+ ]
+ 
++SfxVoidItem OnlineResource SID_ONLINE_RESOURCE
++()
++[
++    /* flags: */
++    AutoUpdate = FALSE,
++    /*Cachable = Cachable,*/
++    FastCall = FALSE,
++    /*HasCoreId = FALSE,*/
++    /*HasDialog = FALSE,*/
++    ReadOnlyDoc = TRUE,
++    Toggle = FALSE,
++    Container = FALSE,
++    RecordAbsolute = FALSE,
++    RecordPerSet;
++    /*Synchron;*/
++
++    /* config: */
++    AccelConfig = TRUE,
++    MenuConfig = TRUE,
++    /*StatusBarConfig = FALSE,*/
++    ToolBoxConfig = TRUE,
++    GroupId = SfxGroupId::Application;
++]
++
+ SfxVoidItem UnicodeNotationToggle SID_UNICODE_NOTATION_TOGGLE
+ ()
+ [
+diff --git a/sfx2/source/appl/appserv.cxx b/sfx2/source/appl/appserv.cxx
+old mode 100644
+new mode 100755
+index 6f062e26e..6919d0d4a
+--- a/sfx2/source/appl/appserv.cxx
++++ b/sfx2/source/appl/appserv.cxx
+@@ -494,6 +494,21 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
+             break;
+         }
+ 
++        case SID_ONLINE_RESOURCE:
++        {
++            OUString sURL("http://www.openoffice.com.tw/document.php");
++            try
++            {
++                uno::Reference< com::sun::star::system::XSystemShellExecute > xSystemShellExecute(
++                    com::sun::star::system::SystemShellExecute::create(::comphelper::getProcessComponentContext()) );
++                xSystemShellExecute->execute( sURL, OUString(), com::sun::star::system::SystemShellExecuteFlags::URIS_ONLY );
++            }
++            catch ( uno::Exception& )
++            {
++            }
++            break;
++        }
++
+         case SID_Q_AND_A:
+         {
+             // Askbot has URL's normalized to languages, not locales
+-- 
+2.16.2
+

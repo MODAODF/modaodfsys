@@ -1,0 +1,22 @@
+diff --git a/source/zh-TW/officecfg/registry/data/org/openoffice/Office/UI.po b/source/zh-TW/officecfg/registry/data/org/openoffice/Office/UI.po
+old mode 100644
+new mode 100755
+index 1381c80a209..a6174b724d4
+--- a/source/zh-TW/officecfg/registry/data/org/openoffice/Office/UI.po
++++ b/source/zh-TW/officecfg/registry/data/org/openoffice/Office/UI.po
+@@ -20601,6 +20601,15 @@ msgctxt ""
+ msgid "Donate to LibreOffice"
+ msgstr "贊助 LibreOffice"
+ 
++#: GenericCommands.xcu
++msgctxt ""
++"GenericCommands.xcu\n"
++"..GenericCommands.UserInterface.Commands..uno:OnlineResource\n"
++"Label\n"
++"value.text"
++msgid "Online Resource..."
++msgstr "線上文件連結..."
++
+ #: GenericCommands.xcu
+ msgctxt ""
+ "GenericCommands.xcu\n"

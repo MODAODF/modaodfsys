@@ -1,0 +1,23 @@
+diff --git a/source/zh-TW/sfx2/messages.po b/source/zh-TW/sfx2/messages.po
+old mode 100644
+new mode 100755
+index 5b218e8a266..41029d80065
+--- a/source/zh-TW/sfx2/messages.po
++++ b/source/zh-TW/sfx2/messages.po
+@@ -1066,6 +1066,16 @@ msgctxt "RID_CNT_STR_WAITING"
+ msgid "The templates are being initialized for first-time usage."
+ msgstr "現在首次初始化需要使用的範本檔案。"
+ 
++#: strings.hrc:229
++msgctxt "RID_CNT_STR_CACHE"
++msgid "The templates are being initialized for thumbnail cache."
++msgstr "現在初始化需要使用的範本縮圖暫存檔案。"
++
++#: strings.hrc:230
++msgctxt "RID_CNT_STR_LOAD"
++msgid "Loading..."
++msgstr "載入中..."
++
+ #: include/sfx2/strings.hrc:229
+ msgctxt "STR_NODEFPRINTER"
+ msgid ""

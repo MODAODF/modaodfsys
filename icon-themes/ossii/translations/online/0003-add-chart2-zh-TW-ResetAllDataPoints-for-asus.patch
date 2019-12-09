@@ -1,0 +1,29 @@
+From f0d183c9856f6baa8cba2feae5ff936caaed841f Mon Sep 17 00:00:00 2001
+From: AlanTom <alan.tang@ossii.com.tw>
+Date: Thu, 12 Sep 2019 14:19:59 +0800
+Subject: [PATCH 3/4] add chart2: zh-TW: ResetAllDataPoints for asus
+
+Change-Id: I305c875b70cc67caead58f2ab5df394d4daa2c03
+---
+ source/zh-TW/chart2/messages.po | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/source/zh-TW/chart2/messages.po b/source/zh-TW/chart2/messages.po
+index ddce528..eca9380 100644
+--- a/source/zh-TW/chart2/messages.po
++++ b/source/zh-TW/chart2/messages.po
+@@ -1128,6 +1128,11 @@ msgctxt "STR_ONLINE_DELETEYERRORBARS"
+ msgid "DeleteYErrorBars"
+ msgstr "刪除Y誤差線"
+ 
++#: chart2/inc/strings.hrc:245
++msgctxt "STR_ONLINE_RESETALLDATAPOINTS"
++msgid "ResetAllDataPoints"
++msgstr "重設所有的資料點"
++
+ #: chart2/uiconfig/ui/3dviewdialog.ui:8
+ msgctxt "3dviewdialog|3DViewDialog"
+ msgid "3D View"
+-- 
+1.8.3.1
+
