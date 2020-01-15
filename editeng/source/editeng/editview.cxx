@@ -71,6 +71,8 @@
 
 #include <com/sun/star/lang/XServiceInfo.hpp>
 
+#define MN_NO_MATCH     997
+
 using namespace com::sun::star;
 using namespace com::sun::star::uno;
 using namespace com::sun::star::beans;
@@ -982,25 +984,27 @@ void EditView::ExecuteSpellPopup( const Point& rPosPixel, Link<SpellCallbackInfo
         nGuessLangWord = CheckLanguage( xSpellAlt->getWord(), xSpeller, xLangGuesser, false );
         nGuessLangPara = CheckLanguage( aParaText, xSpeller, xLangGuesser, true );
     }
-    if (nGuessLangWord != LANGUAGE_NONE || nGuessLangPara != LANGUAGE_NONE)
-    {
-        // make sure LANGUAGE_NONE gets not used as menu entry
-        if (nGuessLangWord == LANGUAGE_NONE)
-            nGuessLangWord = nGuessLangPara;
-        if (nGuessLangPara == LANGUAGE_NONE)
-            nGuessLangPara = nGuessLangWord;
+    if (!comphelper::LibreOfficeKit::isActive()) {
+        if (nGuessLangWord != LANGUAGE_NONE || nGuessLangPara != LANGUAGE_NONE)
+        {
+            // make sure LANGUAGE_NONE gets not used as menu entry
+            if (nGuessLangWord == LANGUAGE_NONE)
+                nGuessLangWord = nGuessLangPara;
+            if (nGuessLangPara == LANGUAGE_NONE)
+                nGuessLangPara = nGuessLangWord;
 
-        aPopupMenu->InsertSeparator();
-        OUString aTmpWord( SvtLanguageTable::GetLanguageString( nGuessLangWord ) );
-        OUString aTmpPara( SvtLanguageTable::GetLanguageString( nGuessLangPara ) );
-        OUString aWordStr( EditResId( RID_STR_WORD ) );
-        aWordStr = aWordStr.replaceFirst( "%x", aTmpWord );
-        OUString aParaStr( EditResId( RID_STR_PARAGRAPH ) );
-        aParaStr = aParaStr.replaceFirst( "%x", aTmpPara );
-        aPopupMenu->InsertItem( MN_WORDLANGUAGE, aWordStr );
-        aPopupMenu->SetHelpId( MN_WORDLANGUAGE, HID_EDITENG_SPELLER_WORDLANGUAGE );
-        aPopupMenu->InsertItem( MN_PARALANGUAGE, aParaStr );
-        aPopupMenu->SetHelpId( MN_PARALANGUAGE, HID_EDITENG_SPELLER_PARALANGUAGE );
+            aPopupMenu->InsertSeparator();
+            OUString aTmpWord( SvtLanguageTable::GetLanguageString( nGuessLangWord ) );
+            OUString aTmpPara( SvtLanguageTable::GetLanguageString( nGuessLangPara ) );
+            OUString aWordStr( EditResId( RID_STR_WORD ) );
+            aWordStr = aWordStr.replaceFirst( "%x", aTmpWord );
+            OUString aParaStr( EditResId( RID_STR_PARAGRAPH ) );
+            aParaStr = aParaStr.replaceFirst( "%x", aTmpPara );
+            aPopupMenu->InsertItem( MN_WORDLANGUAGE, aWordStr );
+            aPopupMenu->SetHelpId( MN_WORDLANGUAGE, HID_EDITENG_SPELLER_WORDLANGUAGE );
+            aPopupMenu->InsertItem( MN_PARALANGUAGE, aParaStr );
+            aPopupMenu->SetHelpId( MN_PARALANGUAGE, HID_EDITENG_SPELLER_PARALANGUAGE );
+        }
     }
 
     // ## Create mnemonics here
@@ -1023,8 +1027,11 @@ void EditView::ExecuteSpellPopup( const Point& rPosPixel, Link<SpellCallbackInfo
         }
         aPopupMenu->InsertSeparator(OString(), nWords);
     }
-    else
+    else {
+        OUString aNoMatch( "no match" );
+        aPopupMenu->InsertItem(MN_NO_MATCH, aNoMatch, MenuItemBits::NONE, OString(), 0);
         aPopupMenu->RemoveItem(nAutoCorrId);   // delete?
+    }
 
     SvtLinguConfig aCfg;
 
@@ -1153,6 +1160,10 @@ void EditView::ExecuteSpellPopup( const Point& rPosPixel, Link<SpellCallbackInfo
             pCallBack->Call( aInf );
         }
         SetSelection( aOldSel );
+    }
+    else if (nId == MN_NO_MATCH)
+    {
+        // do nothing
     }
     else if (nId == nCheckId)
     {
