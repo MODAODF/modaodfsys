@@ -2718,10 +2718,35 @@ void ScCellShell::ExecuteEdit( SfxRequest& rReq )
             break;
 
         case SID_AUTO_SUM:
+        case SID_AUTO_AVERAGE:
+        case SID_AUTO_MIN:
+        case SID_AUTO_MAX:
+        case SID_AUTO_COUNT:
             {
+                OpCode eCode;
+                switch ( nSlot )
+                {
+                    case SID_AUTO_SUM:
+                        eCode = ocSum;
+                        break;
+                    case SID_AUTO_AVERAGE:
+                        eCode = ocAverage;
+                        break;
+                    case SID_AUTO_MIN:
+                        eCode = ocMin;
+                        break;
+                    case SID_AUTO_MAX:
+                        eCode = ocMax;
+                        break;
+                    case SID_AUTO_COUNT:
+                        eCode = ocCount;
+                        break;
+                    default:
+                        return;
+                }
                 bool bSubTotal = false;
                 bool bRangeFinder = false;
-                const OUString aFormula = pTabViewShell->DoAutoSum( bRangeFinder, bSubTotal , ocSum );
+                const OUString aFormula = pTabViewShell->DoAutoSum( bRangeFinder, bSubTotal , eCode );
                 if ( !aFormula.isEmpty() )
                 {
                     const sal_Int32 nPar = aFormula.indexOf( '(' );

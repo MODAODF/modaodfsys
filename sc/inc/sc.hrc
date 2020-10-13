@@ -206,6 +206,10 @@
 #define SID_ENTER_STRING        (SC_MESSAGE_START + 37)
 #define SID_ROWCOL_SELCOUNT     (SC_MESSAGE_START + 38)
 #define SID_AUTO_SUM            (SC_MESSAGE_START + 39)
+#define SID_AUTO_AVERAGE        (SC_MESSAGE_START + 40)
+#define SID_AUTO_MIN            (SC_MESSAGE_START + 41)
+#define SID_AUTO_MAX            (SC_MESSAGE_START + 42)
+#define SID_AUTO_COUNT          (SC_MESSAGE_START + 43)
 
 // messages for opening dialogs:
 #define SID_OPENDLG_CONSOLIDATE             (SC_MESSAGE_START + 50)
