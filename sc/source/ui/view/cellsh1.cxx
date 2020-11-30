@@ -2980,7 +2980,7 @@ void ScCellShell::ExecuteDataPilotDialog()
         }
 
         pTypeDlg->StartExecuteAsync([this, pTypeDlg, pTabViewShell,
-                                    pScMod, pFact, &rDoc, &rMark, &aDestPos](int nResult) {
+                                    pScMod, pFact, &rDoc, &rMark, aDestPos](int nResult) mutable {
             const char* pSrcErrorId = nullptr;
             std::unique_ptr<ScDPObject> pNewDPObject;
 
