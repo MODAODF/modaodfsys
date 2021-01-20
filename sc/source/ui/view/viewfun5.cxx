@@ -339,6 +339,7 @@ bool ScViewFunc::PasteDataFormat( SotClipboardFormatId nFormatId,
                 const SfxViewShell* pViewShell = SfxViewShell::Current();
                 sal_Int32 nDelim = pStrBuffer->indexOf('\n');
                 if (!(pViewShell && pViewShell->isLOKMobilePhone()) && !comphelper::Automation::AutomationInvokedZone::isActive()
+                    && !comphelper::LibreOfficeKit::isActive()
                     && nDelim >= 0 && nDelim != pStrBuffer->getLength () - 1)
                 {
                     vcl::Window* pParent = GetActiveWin();
