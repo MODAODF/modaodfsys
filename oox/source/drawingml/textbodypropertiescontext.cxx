@@ -32,6 +32,7 @@
 #include <oox/token/namespaces.hxx>
 #include <oox/token/properties.hxx>
 #include <oox/token/tokens.hxx>
+#include <comphelper/lok.hxx>
 
 using namespace ::oox::core;
 using namespace ::com::sun::star;
@@ -160,12 +161,14 @@ ContextHandlerRef TextBodyPropertiesContext::onCreateContext( sal_Int32 aElement
                 break;
             }
             case A_TOKEN( spAutoFit ):
-                {
+            {
+                if (!comphelper::LibreOfficeKit::isActive()) {
                     const sal_Int32 tVert = mrTextBodyProp.moVert.get( XML_horz );
                     if( tVert != XML_vert && tVert != XML_eaVert && tVert != XML_vert270 && tVert != XML_mongolianVert )
                         mrTextBodyProp.maPropertyMap.setProperty( PROP_TextAutoGrowHeight, true);
                 }
-                break;
+            }
+            break;
 
             case A_TOKEN( scene3d ):        // CT_Scene3D
             {
