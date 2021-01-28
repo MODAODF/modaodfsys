@@ -184,6 +184,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="no_show_all">True</property>
             <property name="image">custom_color_icon</property>
             <property name="relief">none</property>
             <property name="xalign">0</property>

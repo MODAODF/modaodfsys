@@ -1841,6 +1841,8 @@ ColorWindow::ColorWindow(const OUString& rCommand,
     mxButtonAutoColor->connect_clicked(LINK(this, ColorWindow, AutoColorClickHdl));
     mxButtonNoneColor->connect_clicked(LINK(this, ColorWindow, AutoColorClickHdl));
     mxButtonPicker->connect_clicked(LINK(this, ColorWindow, OpenPickerClickHdl));
+    if (comphelper::LibreOfficeKit::isActive())
+        mxButtonPicker->hide();
 
     mxColorSet->SetSelectHdl(LINK( this, ColorWindow, SelectHdl));
     mxRecentColorSet->SetSelectHdl(LINK( this, ColorWindow, SelectHdl));
