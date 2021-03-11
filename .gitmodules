@@ -8,5 +8,5 @@
 	branch = .
 [submodule "translations"]
 	path = translations
-	url = ../translations
-	branch = .
+	url = https://github.com/NDC-ODF/translations
+	branch = 7.1.1
