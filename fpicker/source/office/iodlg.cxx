@@ -827,7 +827,7 @@ void SvtFileDialog::OpenHdl_Impl(void const * pVoid)
         {
 #if !defined(_WIN32)
             OUString sSelectedFilterDisplayName;
-            pImpl->GetSelectedFilterEntry( sSelectedFilterDisplayName );
+            m_xImpl->GetSelectedFilterEntry( sSelectedFilterDisplayName );
             if ( ::utl::UCBContentHelper::Exists( aFileObj.GetMainURL( INetURLObject::DecodeMechanism::NONE ) ) && !(sSelectedFilterDisplayName == "Text - Plain text File Format (.txt)"))
 #else
             if ( ::utl::UCBContentHelper::Exists( aFileObj.GetMainURL( INetURLObject::DecodeMechanism::NONE ) ) )

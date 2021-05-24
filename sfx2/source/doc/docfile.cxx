@@ -2350,27 +2350,27 @@ void SfxMedium::Transfer_Impl()
     if ( comphelper::isFileUrl( aDestURL ) || !aDest.removeSegment() )
     {
         TransactedTransferForFS_Impl( aSource, aDest, xComEnv );
-			#if !defined(_WIN32)
-				#if enabled_html2txt
-						if (aDest.GetExtension() == "htmltmp"){
-							#define maxsize 256
-							char Srcbuf [maxsize];
-							char Dstbuf [maxsize];
-							char SavePath[maxsize];
-							char SaveBase[maxsize];
+        #if !defined(_WIN32)
+            #if enabled_html2txt
+                if (aDest.getExtension() == "htmltmp"){
+                    #define maxsize 256
+                    char Srcbuf [maxsize];
+                    char Dstbuf [maxsize];
+                    char SavePath[maxsize];
+                    char SaveBase[maxsize];
 
-							snprintf (SavePath, maxsize, "%s", OUStringToOString( aDest.GetPath(), RTL_TEXTENCODING_UTF8 ).getStr());
-							snprintf (SaveBase, maxsize, "%s", OUStringToOString( aDest.GetBase(), RTL_TEXTENCODING_UTF8 ).getStr());
+                    snprintf (SavePath, maxsize, "%s", OUStringToOString( aDest.GetPath(), RTL_TEXTENCODING_UTF8 ).getStr());
+                    snprintf (SaveBase, maxsize, "%s", OUStringToOString( aDest.GetBase(), RTL_TEXTENCODING_UTF8 ).getStr());
 
-							snprintf (Srcbuf, maxsize, "%s/%s.htmltmp", SavePath,SaveBase);
-							//~ snprintf (Srcbuf, maxsize, "file:///tmp/html2txt.html");
-							snprintf (Dstbuf, maxsize, "%s/%s.txt", SavePath,SaveBase);
+                    snprintf (Srcbuf, maxsize, "%s/%s.htmltmp", SavePath,SaveBase);
+                    //~ snprintf (Srcbuf, maxsize, "file:///tmp/html2txt.html");
+                    snprintf (Dstbuf, maxsize, "%s/%s.txt", SavePath,SaveBase);
 
-							ox_html2txt(Srcbuf, Dstbuf);
-							unlink(Srcbuf);
-						}
-				#endif
-			#endif
+                    ox_html2txt(Srcbuf, Dstbuf);
+                    unlink(Srcbuf);
+                }
+            #endif
+        #endif
 
         if (!pImpl->m_bDisableFileSync)
         {
