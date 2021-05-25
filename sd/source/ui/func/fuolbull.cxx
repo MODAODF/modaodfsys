@@ -37,6 +37,7 @@
 #include <svx/nbdtmgfact.hxx>
 #include <svx/svdoutl.hxx>
 #include <memory>
+#include <comphelper/lok.hxx>
 
 using namespace svx::sidebar;
 namespace sd {
@@ -89,20 +90,50 @@ void FuBulletAndPosition::DoExecute( SfxRequest& rReq )
     SfxItemSet aNewAttr( mpViewShell->GetPool(), aAttrMap );
     aNewAttr.Put( aEditAttr, false );
 
-    auto pView = mpView;
-
     // create and execute dialog
-    SdAbstractDialogFactory* pFact = SdAbstractDialogFactory::Create();
-    ScopedVclPtr<AbstractSvxBulletAndPositionDlg> pDlg(pFact->CreateSvxBulletAndPositionDlg(mpViewShell->GetFrameWeld(), &aNewAttr, mpView));
-    sal_uInt16 nResult = pDlg->Execute();
+    if (!comphelper::LibreOfficeKit::isActive()) {
+        auto pView = mpView;
 
-    if( nResult == RET_OK )
-    {
-        const SfxItemSet pOutputSet( *pDlg->GetOutputItemSet( &aNewAttr ) );
-        pView->SetAttributes(pOutputSet, /*bReplaceAll=*/false, /*bSlide*/ pDlg->IsSlideScope(), /*bMaster=*/pDlg->IsApplyToMaster());
+        SdAbstractDialogFactory* pFact = SdAbstractDialogFactory::Create();
+        ScopedVclPtr<AbstractSvxBulletAndPositionDlg> pDlg(pFact->CreateSvxBulletAndPositionDlg(mpViewShell->GetFrameWeld(), &aNewAttr, mpView));
+        sal_uInt16 nResult = pDlg->Execute();
+
+        if( nResult == RET_OK )
+        {
+            const SfxItemSet pOutputSet( *pDlg->GetOutputItemSet( &aNewAttr ) );
+            pView->SetAttributes(pOutputSet, /*bReplaceAll=*/false, /*bSlide*/ pDlg->IsSlideScope(), /*bMaster=*/pDlg->IsApplyToMaster());
+        }
+
+        rReq.Done();
+    } else {
+        SdAbstractDialogFactory* pFact = SdAbstractDialogFactory::Create();
+        ScopedVclPtr<SfxAbstractTabDialog> pDlg( pFact->CreateSdOutlineBulletTabDlg(mpViewShell->GetFrameWeld(), &aNewAttr, mpView) );
+        if ( pPageItem )
+            pDlg->SetCurPageId( OUStringToOString( pPageItem->GetValue(), RTL_TEXTENCODING_UTF8 ) );
+        sal_uInt16 nResult = pDlg->Execute();
+
+        if( nResult != RET_OK )
+            return;
+
+        SfxItemSet aSet( *pDlg->GetOutputItemSet() );
+
+        OutlinerView* pOLV = mpView->GetTextEditOutlinerView();
+
+        std::unique_ptr<OutlineViewModelChangeGuard, o3tl::default_delete<OutlineViewModelChangeGuard>> aGuard;
+
+        if (OutlineView* pView = dynamic_cast<OutlineView*>(mpView))
+        {
+            pOLV = pView->GetViewByWindow(mpViewShell->GetActiveWindow());
+            aGuard.reset(new OutlineViewModelChangeGuard(*pView));
+        }
+
+        if( pOLV )
+            pOLV->ToggleBullets();
+
+        rReq.Done(aSet);
+        pArgs = rReq.GetArgs();
+        mpView->SetAttributes(*pArgs);
     }
-
-    rReq.Done();
 }
 
 void FuBulletAndPosition::SetCurrentBulletsNumbering(SfxRequest& rReq)
