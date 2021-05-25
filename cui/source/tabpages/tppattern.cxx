@@ -36,6 +36,7 @@
 #include <svx/svxdlg.hxx>
 #include <dialmgr.hxx>
 #include <sal/log.hxx>
+#include <comphelper/lok.hxx>
 
 using namespace com::sun::star;
 
@@ -102,6 +103,10 @@ SvxPatternTabPage::SvxPatternTabPage(weld::Container* pPage, weld::DialogControl
 
     m_xBtnAdd->connect_clicked( LINK( this, SvxPatternTabPage, ClickAddHdl_Impl ) );
     m_xBtnModify->connect_clicked( LINK( this, SvxPatternTabPage, ClickModifyHdl_Impl ) );
+    if (comphelper::LibreOfficeKit::isActive()) {
+        m_xBtnAdd->hide();
+        m_xBtnModify->hide();
+    }
 
     m_xPatternLB->SetSelectHdl( LINK( this, SvxPatternTabPage, ChangePatternHdl_Impl ) );
     m_xPatternLB->SetRenameHdl( LINK( this, SvxPatternTabPage, ClickRenameHdl_Impl ) );

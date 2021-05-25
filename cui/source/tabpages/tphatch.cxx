@@ -40,6 +40,7 @@
 #include <svx/svxids.hrc>
 #include <sal/log.hxx>
 #include <svtools/unitconv.hxx>
+#include <comphelper/lok.hxx>
 
 using namespace com::sun::star;
 
@@ -109,7 +110,10 @@ SvxHatchTabPage::SvxHatchTabPage(weld::Container* pPage, weld::DialogController*
 
     m_xBtnAdd->connect_clicked( LINK( this, SvxHatchTabPage, ClickAddHdl_Impl ) );
     m_xBtnModify->connect_clicked( LINK( this, SvxHatchTabPage, ClickModifyHdl_Impl ) );
-
+    if (comphelper::LibreOfficeKit::isActive()) {
+        m_xBtnAdd->hide();
+        m_xBtnModify->hide();
+    }
     m_aCtlPreview.SetDrawMode(Application::GetSettings().GetStyleSettings().GetHighContrastMode() ? OUTPUT_DRAWMODE_CONTRAST : OUTPUT_DRAWMODE_COLOR);
 }
 

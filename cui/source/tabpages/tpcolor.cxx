@@ -34,6 +34,7 @@
 #include <svx/dialmgr.hxx>
 #include <svx/strings.hrc>
 #include <officecfg/Office/Common.hxx>
+#include <comphelper/lok.hxx>
 
 using namespace com::sun::star;
 
@@ -126,7 +127,10 @@ SvxColorTabPage::SvxColorTabPage(weld::Container* pPage, weld::DialogController*
     // Color palettes can't be modified
     m_xBtnDelete->set_sensitive(false);
     m_xBtnDelete->set_tooltip_text( SvxResId(RID_SVXSTR_DELETEUSERCOLOR1) );
-
+    if (comphelper::LibreOfficeKit::isActive()) {
+        m_xBtnAdd->hide();
+        m_xBtnDelete->hide();
+    }
     // disable preset color values
     m_xRGBpreset->set_sensitive(false);
     m_xCMYKpreset->set_sensitive(false);

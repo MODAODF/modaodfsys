@@ -35,6 +35,7 @@
 #include <svx/dialmgr.hxx>
 #include <svx/strings.hrc>
 #include <sal/log.hxx>
+#include <comphelper/lok.hxx>
 
 #define DEFAULT_GRADIENTSTEP 64
 
@@ -108,6 +109,10 @@ SvxGradientTabPage::SvxGradientTabPage(weld::Container* pPage, weld::DialogContr
     m_xMtrColorTo->connect_value_changed( aLink );
     m_xLbColorTo->SetSelectHdl( aLink3 );
 
+    if (comphelper::LibreOfficeKit::isActive()) {
+        m_xBtnAdd->hide();
+        m_xBtnModify->hide();
+    }
     // #i76307# always paint the preview in LTR, because this is what the document does
     m_aCtlPreview.EnableRTL(false);
 }
