@@ -139,8 +139,9 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+<!--disabled Asian Typography start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -187,8 +188,11 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!--disabled Asian Typography end -->
+<!--disabled Tabs start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -235,6 +239,8 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!--disabled Asian Tabs end -->
             <child>
               <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
