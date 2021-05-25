@@ -126,8 +126,9 @@
             <property name="vexpand">True</property>
             <property name="scrollable">True</property>
             <property name="enable_popup">True</property>
+<!-- disable Organizer start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -170,8 +171,9 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!-- disable Organizer end -->
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -218,8 +220,9 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+<!-- disable Area start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -266,8 +269,11 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!-- disable Area end -->
+<!-- disable Transparency start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -314,8 +320,9 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!-- disable Transparency end -->
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -506,8 +513,9 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+<!-- disable Footnote start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -554,8 +562,11 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!-- disable Footnote end -->
+<!-- disable Text Grid start -->
+<!--
             <child>
-              <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -602,6 +613,8 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
+<!-- disable Text Grid end -->
           </object>
           <packing>
             <property name="expand">False</property>
