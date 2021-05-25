@@ -159,6 +159,8 @@ void SvxHyperlinkTabPageBase::InitStdControls ()
         mxBtScript->set_from_icon_name(RID_SVXBMP_SCRIPT);
 
         mxBtScript->connect_clicked ( LINK ( this, SvxHyperlinkTabPageBase, ClickScriptHdl_Impl ) );
+        if (comphelper::LibreOfficeKit::isActive())
+            mxBtScript->hide();
     }
 
     mbStdControlsInit = true;
