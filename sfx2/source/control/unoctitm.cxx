@@ -32,6 +32,7 @@
 #include <com/sun/star/awt/FontDescriptor.hpp>
 #include <com/sun/star/awt/Point.hpp>
 #include <com/sun/star/awt/Size.hpp>
+#include <com/sun/star/awt/Rectangle.hpp>
 #include <com/sun/star/util/URLTransformer.hpp>
 #include <com/sun/star/util/XURLTransformer.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
@@ -43,6 +44,14 @@
 #include <com/sun/star/frame/DispatchResultState.hpp>
 #include <com/sun/star/frame/ModuleManager.hpp>
 #include <com/sun/star/frame/status/Visibility.hpp>
+#include <com/sun/star/drawing/LineCap.hpp>
+#include <com/sun/star/drawing/LineJoint.hpp>
+#include <com/sun/star/drawing/LineStyle.hpp>
+#include <com/sun/star/style/LineSpacing.hpp>
+#include <com/sun/star/style/LineSpacingMode.hpp>
+#include <com/sun/star/table/BorderLine2.hpp>
+#include <com/sun/star/table/BorderLineStyle.hpp>
+#include <com/sun/star/table/CellHoriJustify.hpp>
 #include <comphelper/processfactory.hxx>
 #include <officecfg/Office/Common.hxx>
 #include <uno/current_context.hxx>
@@ -1004,355 +1013,424 @@ static void InterceptLOKStateChangeEvent(sal_uInt16 nSID, SfxViewFrame* pViewFra
     aBuffer.append(aEvent.FeatureURL.Complete);
     aBuffer.append(u'=');
 
-    if (aEvent.FeatureURL.Path == "Bold" ||
-        aEvent.FeatureURL.Path == "CenterPara" ||
-        aEvent.FeatureURL.Path == "CharBackgroundExt" ||
-        aEvent.FeatureURL.Path == "ControlCodes" ||
-        aEvent.FeatureURL.Path == "DefaultBullet" ||
-        aEvent.FeatureURL.Path == "DefaultNumbering" ||
-        aEvent.FeatureURL.Path == "Italic" ||
-        aEvent.FeatureURL.Path == "JustifyPara" ||
-        aEvent.FeatureURL.Path == "LeftPara" ||
-        aEvent.FeatureURL.Path == "OutlineFont" ||
-        aEvent.FeatureURL.Path == "RightPara" ||
-        aEvent.FeatureURL.Path == "Shadowed" ||
-        aEvent.FeatureURL.Path == "SpellOnline" ||
-        aEvent.FeatureURL.Path == "OnlineAutoFormat" ||
-        aEvent.FeatureURL.Path == "SubScript" ||
-        aEvent.FeatureURL.Path == "SuperScript" ||
-        aEvent.FeatureURL.Path == "Strikeout" ||
-        aEvent.FeatureURL.Path == "Underline" ||
-        aEvent.FeatureURL.Path == "ModifiedStatus" ||
-        aEvent.FeatureURL.Path == "TrackChanges" ||
-        aEvent.FeatureURL.Path == "ShowTrackedChanges" ||
-        aEvent.FeatureURL.Path == "NextTrackedChange" ||
-        aEvent.FeatureURL.Path == "PreviousTrackedChange" ||
-        aEvent.FeatureURL.Path == "AlignLeft" ||
-        aEvent.FeatureURL.Path == "AlignHorizontalCenter" ||
-        aEvent.FeatureURL.Path == "AlignRight" ||
-        aEvent.FeatureURL.Path == "DocumentRepair" ||
-        aEvent.FeatureURL.Path == "ObjectAlignLeft" ||
-        aEvent.FeatureURL.Path == "ObjectAlignRight" ||
-        aEvent.FeatureURL.Path == "AlignCenter" ||
-        aEvent.FeatureURL.Path == "AlignUp" ||
-        aEvent.FeatureURL.Path == "AlignMiddle" ||
-        aEvent.FeatureURL.Path == "AlignDown" ||
-        aEvent.FeatureURL.Path == "TraceChangeMode" ||
-        aEvent.FeatureURL.Path == "FormatPaintbrush" ||
-        aEvent.FeatureURL.Path == "FreezePanes" ||
-        aEvent.FeatureURL.Path == "Sidebar")
+    // Modified by Firefly <firefly@ossii.com.tw>
+    const css::uno::Type aType = aEvent.State.getValueType();
+    // aEvent.IsEnabled == false 只能是 disabled
+    if (!aEvent.IsEnabled)
+    {
+        aBuffer.append("disabled");
+    }
+    // 沒有型態是 void 單純就是 enabled
+    else if (aType == cppu::UnoType<void>::get())
+    {
+        aBuffer.append("enabled");
+    }
+    // 型態是 true / false
+    else if (aType == cppu::UnoType<bool>::get())
     {
         bool bTemp = false;
         aEvent.State >>= bTemp;
         aBuffer.append(bTemp);
     }
-    else if (aEvent.FeatureURL.Path == "CharFontName")
+    // 型態是 short / long
+    else if (aType == cppu::UnoType<sal_Int16>::get() ||
+             aType == cppu::UnoType<sal_Int32>::get())
+    {
+        sal_Int32 aInt32;
+        aEvent.State >>= aInt32;
+
+        if (aEvent.FeatureURL.Path == "TransformPosX" ||
+            aEvent.FeatureURL.Path == "TransformPosY" ||
+            aEvent.FeatureURL.Path == "TransformWidth" ||
+            aEvent.FeatureURL.Path == "TransformHeight")
+        {
+            const SfxViewShell* pViewShell = SfxViewShell::Current();
+            if (pViewShell && pViewShell->isLOKMobilePhone())
+            {
+                boost::property_tree::ptree aTree;
+                boost::property_tree::ptree aState;
+                OUString aStr(aEvent.FeatureURL.Complete);
+
+                aTree.put("commandName", aStr.toUtf8().getStr());
+                pViewFrame->GetBindings().QueryControlState(nSID, aState);
+                aTree.add_child("state", aState);
+
+                aBuffer.setLength(0);
+                std::stringstream aStream;
+                boost::property_tree::write_json(aStream, aTree, false);
+                aBuffer.appendAscii(aStream.str().c_str());
+            }
+            else
+            {
+                aBuffer.append(aInt32);
+            }
+        }
+        else if (aEvent.FeatureURL.Path == "TableColumWidth" ||
+                 aEvent.FeatureURL.Path == "TableRowHeight")
+        {
+            float nScaleValue = 1000.0;
+            aInt32 *= nScaleValue;
+            sal_Int32 nConvertedValue = OutputDevice::LogicToLogic(aInt32, MapUnit::MapTwip, MapUnit::MapInch);
+            aBuffer.append(OUString::number(nConvertedValue / nScaleValue));
+        }
+        else
+        {
+            aBuffer.append(aInt32);
+        }
+     }
+    // 型態是 OUString
+    else if (aType == cppu::UnoType<OUString>::get())
+    {
+        OUString aString;
+        aEvent.State >>= aString;
+        aBuffer.append(aString);
+    }
+    // 型態是 OUString[]
+    else if (aType == cppu::UnoType<css::uno::Sequence<OUString>>::get())
+    {
+        css::uno::Sequence<OUString> aSeq;
+        aEvent.State >>= aSeq;
+        if (aEvent.FeatureURL.Path == "LanguageStatus" ||
+            aEvent.FeatureURL.Path == "StatePageNumber")
+        {
+            aBuffer.append(aSeq[0]);
+        }
+        else
+        {
+            aBuffer.append(u'{');
+            for (sal_Int32 itSeq = 0; itSeq < aSeq.getLength(); itSeq++)
+            {
+                aBuffer.append("\"").append(aSeq[itSeq]);
+                if (itSeq != aSeq.getLength() - 1)
+                    aBuffer.append("\":true,");
+                else
+                    aBuffer.append("\":true");
+            }
+            aBuffer.append(u'}');
+        }
+    }
+    else if (aType == cppu::UnoType<css::awt::FontDescriptor>::get())
     {
         css::awt::FontDescriptor aFontDesc;
         aEvent.State >>= aFontDesc;
         aBuffer.append(aFontDesc.Name);
     }
-    else if (aEvent.FeatureURL.Path == "FontHeight")
+    else if (aType == cppu::UnoType<css::frame::status::FontHeight>::get())
     {
         css::frame::status::FontHeight aFontHeight;
         aEvent.State >>= aFontHeight;
         aBuffer.append(aFontHeight.Height);
     }
-    else if (aEvent.FeatureURL.Path == "StyleApply")
+    else if (aType == cppu::UnoType<css::frame::status::Template>::get())
     {
         css::frame::status::Template aTemplate;
         aEvent.State >>= aTemplate;
         aBuffer.append(aTemplate.StyleName);
     }
-    else if (aEvent.FeatureURL.Path == "BackColor" ||
-             aEvent.FeatureURL.Path == "BackgroundColor" ||
-             aEvent.FeatureURL.Path == "CharBackColor" ||
-             aEvent.FeatureURL.Path == "Color" ||
-             aEvent.FeatureURL.Path == "FontColor" ||
-             aEvent.FeatureURL.Path == "FrameLineColor")
-    {
-        sal_Int32 nColor = -1;
-        aEvent.State >>= nColor;
-        aBuffer.append(nColor);
-    }
-    else if (aEvent.FeatureURL.Path == "Undo" ||
-             aEvent.FeatureURL.Path == "Redo")
-    {
-        const SfxUInt32Item* pUndoConflict = dynamic_cast< const SfxUInt32Item * >( pState );
-        if ( pUndoConflict && pUndoConflict->GetValue() > 0 )
-        {
-            aBuffer.append("disabled");
-        }
-        else
-        {
-            aBuffer.append(aEvent.IsEnabled ? std::u16string_view(u"enabled") : std::u16string_view(u"disabled"));
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "Cut" ||
-             aEvent.FeatureURL.Path == "Copy" ||
-             aEvent.FeatureURL.Path == "Paste" ||
-             aEvent.FeatureURL.Path == "SelectAll" ||
-             aEvent.FeatureURL.Path == "InsertAnnotation" ||
-             aEvent.FeatureURL.Path == "DeleteAnnotation" ||
-             aEvent.FeatureURL.Path == "ResolveAnnotation" ||
-             aEvent.FeatureURL.Path == "ResolveAnnotationThread" ||
-             aEvent.FeatureURL.Path == "InsertRowsBefore" ||
-             aEvent.FeatureURL.Path == "InsertRowsAfter" ||
-             aEvent.FeatureURL.Path == "InsertColumnsBefore" ||
-             aEvent.FeatureURL.Path == "InsertColumnsAfter" ||
-             aEvent.FeatureURL.Path == "MergeCells" ||
-             aEvent.FeatureURL.Path == "InsertObjectChart" ||
-             aEvent.FeatureURL.Path == "InsertSection" ||
-             aEvent.FeatureURL.Path == "InsertAnnotation" ||
-             aEvent.FeatureURL.Path == "InsertPagebreak" ||
-             aEvent.FeatureURL.Path == "InsertColumnBreak" ||
-             aEvent.FeatureURL.Path == "HyperlinkDialog" ||
-             aEvent.FeatureURL.Path == "InsertSymbol" ||
-             aEvent.FeatureURL.Path == "InsertPage" ||
-             aEvent.FeatureURL.Path == "DeletePage" ||
-             aEvent.FeatureURL.Path == "DuplicatePage" ||
-             aEvent.FeatureURL.Path == "DeleteRows" ||
-             aEvent.FeatureURL.Path == "DeleteColumns" ||
-             aEvent.FeatureURL.Path == "DeleteTable" ||
-             aEvent.FeatureURL.Path == "SelectTable" ||
-             aEvent.FeatureURL.Path == "EntireRow" ||
-             aEvent.FeatureURL.Path == "EntireColumn" ||
-             aEvent.FeatureURL.Path == "EntireCell" ||
-             aEvent.FeatureURL.Path == "SortAscending" ||
-             aEvent.FeatureURL.Path == "SortDescending" ||
-             aEvent.FeatureURL.Path == "AcceptAllTrackedChanges" ||
-             aEvent.FeatureURL.Path == "RejectAllTrackedChanges" ||
-             aEvent.FeatureURL.Path == "AcceptTrackedChange" ||
-             aEvent.FeatureURL.Path == "RejectTrackedChange" ||
-             aEvent.FeatureURL.Path == "NextTrackedChange" ||
-             aEvent.FeatureURL.Path == "PreviousTrackedChange" ||
-             aEvent.FeatureURL.Path == "FormatGroup" ||
-             aEvent.FeatureURL.Path == "ObjectBackOne" ||
-             aEvent.FeatureURL.Path == "SendToBack" ||
-             aEvent.FeatureURL.Path == "ObjectForwardOne" ||
-             aEvent.FeatureURL.Path == "BringToFront" ||
-             aEvent.FeatureURL.Path == "WrapRight" ||
-             aEvent.FeatureURL.Path == "WrapThrough" ||
-             aEvent.FeatureURL.Path == "WrapLeft" ||
-             aEvent.FeatureURL.Path == "WrapIdeal" ||
-             aEvent.FeatureURL.Path == "WrapOn" ||
-             aEvent.FeatureURL.Path == "WrapOff" ||
-             aEvent.FeatureURL.Path == "UpdateCurIndex" ||
-             aEvent.FeatureURL.Path == "InsertCaptionDialog" ||
-             aEvent.FeatureURL.Path == "MergeCells" ||
-             aEvent.FeatureURL.Path == "SplitTable" ||
-             aEvent.FeatureURL.Path == "DeleteNote" ||
-             aEvent.FeatureURL.Path == "AcceptChanges" ||
-             aEvent.FeatureURL.Path == "SetDefault" ||
-             aEvent.FeatureURL.Path == "ParaLeftToRight" ||
-             aEvent.FeatureURL.Path == "ParaRightToLeft" ||
-             aEvent.FeatureURL.Path == "ParaspaceIncrease" ||
-             aEvent.FeatureURL.Path == "ParaspaceDecrease" ||
-             aEvent.FeatureURL.Path == "TableDialog" ||
-             aEvent.FeatureURL.Path == "FormatCellDialog" ||
-             aEvent.FeatureURL.Path == "FontDialog" ||
-             aEvent.FeatureURL.Path == "ParagraphDialog" ||
-             aEvent.FeatureURL.Path == "OutlineBullet" ||
-             aEvent.FeatureURL.Path == "InsertIndexesEntry" ||
-             aEvent.FeatureURL.Path == "TransformDialog" ||
-             aEvent.FeatureURL.Path == "EditRegion" ||
-             aEvent.FeatureURL.Path == "ThesaurusDialog" ||
-             aEvent.FeatureURL.Path == "OutlineRight" ||
-             aEvent.FeatureURL.Path == "OutlineLeft" ||
-             aEvent.FeatureURL.Path == "OutlineDown" ||
-             aEvent.FeatureURL.Path == "OutlineUp" ||
-             aEvent.FeatureURL.Path == "FormatArea" ||
-             aEvent.FeatureURL.Path == "FormatLine" ||
-             aEvent.FeatureURL.Path == "FormatColumns" ||
-             aEvent.FeatureURL.Path == "Watermark" ||
-             aEvent.FeatureURL.Path == "InsertBreak" ||
-             aEvent.FeatureURL.Path == "InsertEndnote" ||
-             aEvent.FeatureURL.Path == "InsertFootnote" ||
-             aEvent.FeatureURL.Path == "InsertReferenceField" ||
-             aEvent.FeatureURL.Path == "InsertBookmark" ||
-             aEvent.FeatureURL.Path == "InsertAuthoritiesEntry" ||
-             aEvent.FeatureURL.Path == "InsertMultiIndex" ||
-             aEvent.FeatureURL.Path == "InsertField" ||
-             aEvent.FeatureURL.Path == "InsertPageNumberField" ||
-             aEvent.FeatureURL.Path == "InsertPageCountField" ||
-             aEvent.FeatureURL.Path == "InsertDateField" ||
-             aEvent.FeatureURL.Path == "InsertTitleField" ||
-             aEvent.FeatureURL.Path == "InsertFieldCtrl" ||
-             aEvent.FeatureURL.Path == "CharmapControl" ||
-             aEvent.FeatureURL.Path == "EnterGroup" ||
-             aEvent.FeatureURL.Path == "LeaveGroup" ||
-             aEvent.FeatureURL.Path == "Combine" ||
-             aEvent.FeatureURL.Path == "Merge" ||
-             aEvent.FeatureURL.Path == "Dismantle" ||
-             aEvent.FeatureURL.Path == "Substract" ||
-             aEvent.FeatureURL.Path == "DistributeSelection" ||
-             aEvent.FeatureURL.Path == "Intersect" ||
-             aEvent.FeatureURL.Path == "ResetAttributes")
-    {
-        aBuffer.append(aEvent.IsEnabled ? std::u16string_view(u"enabled") : std::u16string_view(u"disabled"));
-    }
-    else if (aEvent.FeatureURL.Path == "AssignLayout" ||
-             aEvent.FeatureURL.Path == "StatusSelectionMode" ||
-             aEvent.FeatureURL.Path == "Signature" ||
-             aEvent.FeatureURL.Path == "SelectionMode" ||
-             aEvent.FeatureURL.Path == "StatusBarFunc" ||
-             aEvent.FeatureURL.Path == "FreezePanesColumn" ||
-             aEvent.FeatureURL.Path == "FreezePanesRow")
-    {
-        sal_Int32 aInt32;
-
-        if (aEvent.IsEnabled && (aEvent.State >>= aInt32))
-        {
-            aBuffer.append(OUString::number(aInt32));
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "TransformPosX" ||
-             aEvent.FeatureURL.Path == "TransformPosY" ||
-             aEvent.FeatureURL.Path == "TransformWidth" ||
-             aEvent.FeatureURL.Path == "TransformHeight")
-    {
-        const SfxViewShell* pViewShell = SfxViewShell::Current();
-        if (aEvent.IsEnabled && pViewShell && pViewShell->isLOKMobilePhone())
-        {
-            boost::property_tree::ptree aTree;
-            boost::property_tree::ptree aState;
-            OUString aStr(aEvent.FeatureURL.Complete);
-
-            aTree.put("commandName", aStr.toUtf8().getStr());
-            pViewFrame->GetBindings().QueryControlState(nSID, aState);
-            aTree.add_child("state", aState);
-
-            aBuffer.setLength(0);
-            std::stringstream aStream;
-            boost::property_tree::write_json(aStream, aTree);
-            aBuffer.appendAscii(aStream.str().c_str());
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "StatusDocPos" ||
-             aEvent.FeatureURL.Path == "RowColSelCount" ||
-             aEvent.FeatureURL.Path == "StatusPageStyle" ||
-             aEvent.FeatureURL.Path == "StateTableCell" ||
-             aEvent.FeatureURL.Path == "StateWordCount" ||
-             aEvent.FeatureURL.Path == "PageStyleName" ||
-             aEvent.FeatureURL.Path == "PageStatus" ||
-             aEvent.FeatureURL.Path == "LayoutStatus" ||
-             aEvent.FeatureURL.Path == "Context")
-    {
-        OUString aString;
-
-        if (aEvent.IsEnabled && (aEvent.State >>= aString))
-        {
-            aBuffer.append(aString);
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "InsertMode" ||
-             aEvent.FeatureURL.Path == "WrapText" ||
-             aEvent.FeatureURL.Path == "NumberFormatCurrency" ||
-             aEvent.FeatureURL.Path == "NumberFormatPercent" ||
-             aEvent.FeatureURL.Path == "NumberFormatDecimal" ||
-             aEvent.FeatureURL.Path == "NumberFormatDate" ||
-             aEvent.FeatureURL.Path == "ShowResolvedAnnotations")
-    {
-        bool aBool;
-
-        if (aEvent.IsEnabled && (aEvent.State >>= aBool))
-        {
-            aBuffer.append(OUString::boolean(aBool));
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "ToggleMergeCells")
-    {
-        bool aBool;
-
-        if (aEvent.IsEnabled && (aEvent.State >>= aBool))
-        {
-            aBuffer.append(OUString::boolean(aBool));
-        }
-        else
-        {
-            aBuffer.append("disabled");
-        }
-    }
-    else if (aEvent.FeatureURL.Path == "Position")
+    else if (aType == cppu::UnoType<css::awt::Point>::get())
     {
         css::awt::Point aPoint;
-
-        if (aEvent.IsEnabled && (aEvent.State >>= aPoint))
-        {
-            aBuffer.append(OUString::number(aPoint.X)).append(" / ").append(OUString::number(aPoint.Y));
-        }
+        aEvent.State >>= aPoint;
+        aBuffer.append(OUString::number(aPoint.X)).append(" / ").append(OUString::number(aPoint.Y));
     }
-    else if (aEvent.FeatureURL.Path == "Size")
+    else if (aType == cppu::UnoType<css::awt::Size>::get())
     {
         css::awt::Size aSize;
+        aEvent.State >>= aSize;
+        aBuffer.append(OUString::number(aSize.Width)).append(" x ").append(OUString::number(aSize.Height));
+    }
+    else if (aType == cppu::UnoType<css::awt::Rectangle>::get())
+    {
+        css::awt::Rectangle aRectangle;
+        aEvent.State >>= aRectangle;
+        aBuffer.append(aRectangle.X).append(",")
+               .append(aRectangle.Y).append(",")
+               .append(aRectangle.Width).append(",")
+               .append(aRectangle.Height);
+    }
+    else if (aType == cppu::UnoType<css::drawing::LineCap>::get())
+    {
+        css::drawing::LineCap aLineCap;
+        aEvent.State >>= aLineCap;
+        switch (aLineCap)
+        {
+            case drawing::LineCap_BUTT:
+                aBuffer.append("butt");
+                break;
+            case drawing::LineCap_ROUND:
+                aBuffer.append("round");
+                break;
+            case drawing::LineCap_SQUARE:
+                aBuffer.append("square");
+                break;
+            default:
+                aBuffer.append("unknown");
+                break;
+        }
+    }
+    else if (aType == cppu::UnoType<css::drawing::LineJoint>::get())
+    {
+        css::drawing::LineJoint aLineJoint;
+        aEvent.State >>= aLineJoint;
+        switch (aLineJoint)
+        {
+            case drawing::LineJoint_NONE:
+                aBuffer.append("none");
+                break;
+            case drawing::LineJoint_MIDDLE:
+                aBuffer.append("middle");
+                break;
+            case drawing::LineJoint_BEVEL:
+                aBuffer.append("bevel");
+                break;
+            case drawing::LineJoint_MITER:
+                aBuffer.append("miter");
+                break;
+            case drawing::LineJoint_ROUND:
+                aBuffer.append("round");
+                break;
+            default:
+                aBuffer.append("unknown");
+                break;
+        }
+    }
+    else if (aType == cppu::UnoType<css::drawing::LineStyle>::get())
+    {
+        css::drawing::LineStyle aLineStyle;
+        aEvent.State >>= aLineStyle;
+        switch (aLineStyle)
+        {
+            case drawing::LineStyle_NONE:
+                aBuffer.append("none");
+                break;
+            case drawing::LineStyle_SOLID:
+                aBuffer.append("soled");
+                break;
+            case drawing::LineStyle_DASH:
+                aBuffer.append("dash");
+                break;
+            default:
+                aBuffer.append("unknown");
+                break;
+        }
+    }
+    else if (aType == cppu::UnoType<css::style::LineSpacing>::get())
+    {
+        css::style::LineSpacing aLineSpacing;
+        aEvent.State >>= aLineSpacing;
 
-        if (aEvent.IsEnabled && (aEvent.State >>= aSize))
+        boost::property_tree::ptree aItem;
+        OUString aSpacingMode = "unknown";
+        switch (aLineSpacing.Mode)
         {
-            aBuffer.append(OUString::number(aSize.Width)).append(" x ").append(OUString::number(aSize.Height));
+            case css::style::LineSpacingMode::PROP:
+                aSpacingMode = "prop";
+                break;
+            case css::style::LineSpacingMode::MINIMUM:
+                aSpacingMode = "minimum";
+                break;
+            case css::style::LineSpacingMode::LEADING:
+                aSpacingMode = "leading";
+                break;
+            case css::style::LineSpacingMode::FIX:
+                aSpacingMode = "fix";
+                break;
         }
-    }
-    else if (aEvent.FeatureURL.Path == "LanguageStatus" ||
-             aEvent.FeatureURL.Path == "StatePageNumber")
-    {
-        css::uno::Sequence< OUString > aSeq;
+        aItem.add("Mode", aSpacingMode);
+        aItem.add("Height", aLineSpacing.Height);
 
-        if (aEvent.IsEnabled)
+        std::stringstream aStream;
+        boost::property_tree::write_json(aStream, aItem, false);
+        aBuffer.appendAscii(aStream.str().c_str());
+    }
+    else if (aType == cppu::UnoType<css::table::BorderLine2>::get())
+    {
+        css::table::BorderLine2 aBorderLine;
+        aEvent.State >>= aBorderLine;
+
+        OUString aLineStyle = "unknown";
+        switch (aBorderLine.LineStyle)
         {
-            OUString sValue;
-            if (aEvent.State >>= sValue)
-            {
-                aBuffer.append(sValue);
-            }
-            else if (aEvent.State >>= aSeq)
-            {
-                aBuffer.append(aSeq[0]);
-            }
+            case css::table::BorderLineStyle::DASHED: // 2
+                aLineStyle = "dashed";
+                break;
+            case css::table::BorderLineStyle::DASH_DOT: // 16
+                aLineStyle = "dash_dot";
+                break;
+            case css::table::BorderLineStyle::DASH_DOT_DOT: // 17
+                aLineStyle = "dash_dot_dot";
+                break;
+            case css::table::BorderLineStyle::DOTTED: // 1
+                aLineStyle = "dotted";
+                break;
+            case css::table::BorderLineStyle::DOUBLE: // 3
+                aLineStyle = "double";
+                break;
+            case css::table::BorderLineStyle::DOUBLE_THIN: // 15
+                aLineStyle = "double_thin";
+                break;
+            case css::table::BorderLineStyle::EMBOSSED: // 10
+                aLineStyle = "embossed";
+                break;
+            case css::table::BorderLineStyle::ENGRAVED: // 11
+                aLineStyle = "engraved";
+                break;
+            case css::table::BorderLineStyle::FINE_DASHED: // 14
+                aLineStyle = "fine_dashed";
+                break;
+            case css::table::BorderLineStyle::INSET: // 13
+                aLineStyle = "inset";
+                break;
+            case css::table::BorderLineStyle::NONE: // 32767
+                aLineStyle = "none";
+                break;
+            case css::table::BorderLineStyle::OUTSET: // 12
+                aLineStyle = "outset";
+                break;
+            case css::table::BorderLineStyle::SOLID: // 0
+                aLineStyle = "solid";
+                break;
+            case css::table::BorderLineStyle::THICKTHIN_LARGEGAP: // 9
+                aLineStyle = "thickthin_largegap";
+                break;
+            case css::table::BorderLineStyle::THICKTHIN_MEDIUMGAP: // 8
+                aLineStyle = "thickthin_mediumgap";
+                break;
+            case css::table::BorderLineStyle::THICKTHIN_SMALLGAP: // 7
+                aLineStyle = "thickthin_smallgap";
+                break;
+            case css::table::BorderLineStyle::THINTHICK_LARGEGAP: // 6
+                aLineStyle = "thinthick_largegap";
+                break;
+            case css::table::BorderLineStyle::THINTHICK_MEDIUMGAP: // 5
+                aLineStyle = "thinthick_mediumgap";
+                break;
+            case css::table::BorderLineStyle::THINTHICK_SMALLGAP: // 4
+                aLineStyle = "thinthick_smallgap";
+                break;
+        }
+        boost::property_tree::ptree aItem;
+        aItem.add("Color", aBorderLine.Color);
+        aItem.add("InnerLineWidth", aBorderLine.InnerLineWidth);
+        aItem.add("OuterLineWidth", aBorderLine.OuterLineWidth);
+        aItem.add("LineDistance", aBorderLine.LineDistance);
+        aItem.add("LineStyle", aLineStyle);
+        aItem.add("LineWidth", aBorderLine.LineWidth);
+
+        std::stringstream aStream;
+        boost::property_tree::write_json(aStream, aItem, false);
+        aBuffer.appendAscii(aStream.str().c_str());
+    }
+    else if (aType == cppu::UnoType<css::table::CellHoriJustify>::get())
+    {
+        css::table::CellHoriJustify aHoriJustify;
+        aEvent.State >>= aHoriJustify;
+        switch (aHoriJustify)
+        {
+            case css::table::CellHoriJustify_LEFT:
+            aBuffer.append("left");
+            break;
+            case css::table::CellHoriJustify_CENTER:
+                aBuffer.append("center");
+                break;
+            case css::table::CellHoriJustify_RIGHT:
+                aBuffer.append("right");
+                break;
+            case css::table::CellHoriJustify_BLOCK:
+                aBuffer.append("block");
+                break;
+            case css::table::CellHoriJustify_REPEAT:
+                aBuffer.append("repeat");
+                break;
+            case css::table::CellHoriJustify_STANDARD:
+            default:
+                aBuffer.append("standard");
+                break;
         }
     }
-    else if (aEvent.FeatureURL.Path == "InsertPageHeader" ||
-             aEvent.FeatureURL.Path == "InsertPageFooter")
+    /* TODO: 目前看來尚不需要解析 css::beans::PropertyValue 陣列
+    else if (aType == cppu::UnoType<css::uno::Sequence<css::beans::PropertyValue>>::get())
     {
-        if (aEvent.IsEnabled)
+        boost::property_tree::ptree aItem;
+        css::uno::Sequence<css::beans::PropertyValue> aPropSeq;
+        aEvent.State >>= aPropSeq;
+        for (sal_Int32 itSeq = 0; itSeq < aPropSeq.getLength(); itSeq++)
         {
-            css::uno::Sequence< OUString > aSeq;
-            if (aEvent.State >>= aSeq)
-            {
-                aBuffer.append(u'{');
-                for (sal_Int32 itSeq = 0; itSeq < aSeq.getLength(); itSeq++)
-                {
-                    aBuffer.append("\"").append(aSeq[itSeq]);
-                    if (itSeq != aSeq.getLength() - 1)
-                        aBuffer.append("\":true,");
-                    else
-                        aBuffer.append("\":true");
-                }
-                aBuffer.append(u'}');
-            }
+            const css::beans::PropertyValue& rProp = aPropSeq[itSeq];
+            aItem.put(rProp.Name.toUtf8().getStr(), rProp.Value);
         }
-    }
-    else if (aEvent.FeatureURL.Path == "TableColumWidth" ||
-             aEvent.FeatureURL.Path == "TableRowHeight")
+        std::stringstream aStream;
+        boost::property_tree::write_json(aStream, aItem, false);
+        aBuffer.appendAscii(aStream.str().c_str());
+    } */
+    else if (aType == cppu::UnoType<css::frame::status::Visibility>::get())
     {
-        sal_Int32 nValue;
-        if (aEvent.State >>= nValue)
+        css::frame::status::Visibility aVisibility;
+        aEvent.State >>= aVisibility;
+        aBuffer.append("{\"visible\":").append(aVisibility.bVisible).append("}");
+    }
+    // TODO: 如果有選取區域的話，極易產生此種 type
+    else if (aType == cppu::UnoType<css::frame::status::ItemStatus>::get())
+    {
+        frame::status::ItemStatus aItemStatus;
+        aEvent.State >>= aItemStatus;
+        SfxItemState eState = static_cast<SfxItemState>(aItemStatus.State);
+        OUString eStateName = "*";
+        switch (eState)
         {
-            float nScaleValue = 1000.0;
-            nValue *= nScaleValue;
-            sal_Int32 nConvertedValue = OutputDevice::LogicToLogic(nValue, MapUnit::MapTwip, MapUnit::MapInch);
-            aBuffer.append(OUString::number(nConvertedValue / nScaleValue));
+            case SfxItemState::UNKNOWN:
+                eStateName = "UNKNOWN";
+                break;
+            case SfxItemState::DISABLED:
+                eStateName = "DISABLED";
+                aBuffer.append("disabled");
+                break;
+            case SfxItemState::READONLY:
+                eStateName = "READONLY";
+                break;
+            case SfxItemState::DONTCARE:
+                eStateName = "DONTCARE";
+                break;
+            case SfxItemState::DEFAULT:
+                eStateName = "DEFAULT";
+                break;
+            case SfxItemState::SET:
+                eStateName = "SET";
+                break;
         }
     }
     else
     {
-        // Try to send JSON state version
-        SfxLokHelper::sendUnoStatus(SfxViewShell::Current(), pState);
+        const SfxViewShell* pViewShell = SfxViewShell::Current();
+        boost::property_tree::ptree aItem;
 
-        return;
+        // Try to send JSON state version
+        if (pViewShell && pState && pState != INVALID_POOL_ITEM)
+        {
+            aItem = pState->dumpAsJSON();
+        }
+
+        if (aItem.count("state"))
+        {
+            aItem.put("commandName", aEvent.FeatureURL.Complete);
+            aBuffer.setLength(0);  // 清空 aBuffer
+            std::stringstream aStream;
+            boost::property_tree::write_json(aStream, aItem, false);
+            aBuffer.appendAscii(aStream.str().c_str());
+        }
+        else
+        {
+            SAL_WARN("lok_StateChange", aEvent.FeatureURL.Complete << "=unknown type(" << aEvent.State.getValueTypeName() << ")");
+            return;
+        }
     }
 
     OUString payload = aBuffer.makeStringAndClear();
     if (const SfxViewShell* pViewShell = pViewFrame->GetViewShell())
+    {
         pViewShell->libreOfficeKitViewCallback(LOK_CALLBACK_STATE_CHANGED, payload.toUtf8().getStr());
+        SAL_INFO("lok_StateChange", payload.toUtf8().getStr());
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
