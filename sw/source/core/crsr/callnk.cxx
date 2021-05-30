@@ -30,6 +30,7 @@
 #include <ndtxt.hxx>
 #include <flyfrm.hxx>
 #include <breakit.hxx>
+#include <comphelper/lok.hxx>
 
 SwCallLink::SwCallLink( SwCursorShell & rSh )
     : m_rShell( rSh )
@@ -61,6 +62,9 @@ SwCallLink::SwCallLink( SwCursorShell & rSh )
 
 static void lcl_notifyRow(const SwContentNode* pNode, SwCursorShell & rShell)
 {
+    if (comphelper::LibreOfficeKit::isActive())
+        return;
+
     if ( !pNode )
         return;
 
