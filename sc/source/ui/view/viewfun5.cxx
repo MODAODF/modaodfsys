@@ -338,9 +338,25 @@ bool ScViewFunc::PasteDataFormat( SotClipboardFormatId nFormatId,
                 // Do CSV dialog if more than one line. But not if invoked from Automation.
                 const SfxViewShell* pViewShell = SfxViewShell::Current();
                 sal_Int32 nDelim = pStrBuffer->indexOf('\n');
-                if (!(pViewShell && pViewShell->isLOKMobilePhone()) && !comphelper::Automation::AutomationInvokedZone::isActive()
-                    && !comphelper::LibreOfficeKit::isActive()
-                    && nDelim >= 0 && nDelim != pStrBuffer->getLength () - 1)
+                // Modified by Firefly <firefly@ossii.com.tw>
+                // 貼上外部儲存格時：
+                // 預設欄位分隔符號為"\t,"
+                // 預設整欄內容需用 double-quote 括住
+                const bool bMultiLines = nDelim >= 0 && nDelim != pStrBuffer->getLength () - 1; // 是否多行
+
+                // 如果是在 Kit 模式，且為多行的話
+                if (comphelper::LibreOfficeKit::isActive() && bMultiLines)
+                {
+                    ScAsciiOptions aOptions; // 預設參數
+                    aOptions.SetFieldSeps("\t,"); // 分隔符號為"\t,"
+                    aOptions.SetTextSep( '"' ); // 欄位符號
+                    aOptions.SetSkipEmptyCells(false); // 空的儲存格也要填
+                    pObj->SetExtOptions( aOptions ); // 指定
+                    pObj->ImportString( *pStrBuffer, nFormatId ); // 匯入
+                    return true; // 完工 XD
+                }
+                else if (!(pViewShell && pViewShell->isLOKMobilePhone()) && !comphelper::Automation::AutomationInvokedZone::isActive()
+                    && bMultiLines)
                 {
                     vcl::Window* pParent = GetActiveWin();
 
