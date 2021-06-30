@@ -532,7 +532,7 @@ AC_SUBST(OXO_VERSION_PATCH)
 
 AC_MSG_CHECKING([for defined of packages requires])
 if test "$with_package_format" = "rpm" ; then
-    PACKAGEREQUIRES_JAVA="java-1.8.0-openjdk"
+    #PACKAGEREQUIRES_JAVA="java-1.8.0-openjdk"
     PACKAGEREQUIRES_GUMBO="gumbo-parser"
     PACKAGEREQUIRES_HUNSPELL="hunspell"
     PACKAGEREQUIRES_HUNSPELL_EN="hunspell-en"
@@ -542,7 +542,7 @@ if test "$with_package_format" = "rpm" ; then
     PACKAGEREQUIRES_EN_US="en-US"
     PACKAGEREQUIRES_ZH_TW="zh-TW"
 elif test "$with_package_format" = "deb" ; then
-    PACKAGEREQUIRES_JAVA="openjdk-8-jdk"
+    #PACKAGEREQUIRES_JAVA="openjdk-8-jdk"
     PACKAGEREQUIRES_GUMBO="libgumbo1"
     PACKAGEREQUIRES_HUNSPELL="hunspell"
     PACKAGEREQUIRES_HUNSPELL_EN="hunspell-en-us"
