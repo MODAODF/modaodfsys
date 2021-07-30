@@ -1,12 +1,12 @@
 [submodule "dictionaries"]
 	path = dictionaries
-	url = ../dictionaries
-	branch = .
+	url = https://anongit.freedesktop.org/git/libreoffice/dictionaries.git
+	branch = libreoffice-7-1
 [submodule "helpcontent2"]
 	path = helpcontent2
-	url = ../help
-	branch = .
+	url = https://anongit.freedesktop.org/git/libreoffice/help.git
+	branch = libreoffice-7-1
 [submodule "translations"]
 	path = translations
-	url = https://github.com/NDC-ODF/translations
-	branch = 7.1.1
+	url = https://github.com/NDCODF/translations
+	branch = 7.1
