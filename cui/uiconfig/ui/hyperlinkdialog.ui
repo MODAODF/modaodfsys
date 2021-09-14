@@ -304,6 +304,8 @@
                 <property name="position">2</property>
               </packing>
             </child>
+<!-- remove document tab -->
+<!--
             <child type="tab">
               <object class="GtkBox" id="document">
                 <property name="visible">True</property>
@@ -341,6 +343,7 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
             <child>
               <!-- n-columns=1 n-rows=1 -->
               <object class="GtkGrid">
@@ -378,6 +381,8 @@
                 <property name="position">3</property>
               </packing>
             </child>
+<!-- remove newdocument tab -->
+<!--
             <child type="tab">
               <object class="GtkBox" id="newdocument">
                 <property name="visible">True</property>
@@ -415,6 +420,7 @@
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+-->
           </object>
           <packing>
             <property name="expand">True</property>
