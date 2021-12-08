@@ -171,6 +171,7 @@
 
 #include "lokinteractionhandler.hxx"
 #include "lokclipboard.hxx"
+#include <officecfg/Office/Common.hxx>
 #include <officecfg/Office/Impress.hxx>
 
 using namespace css;
@@ -6231,6 +6232,26 @@ static void activateNotebookbar(const OUString& rApp)
     }
 }
 
+void setCertificateDir()
+{
+    const char* pEnvVarString = ::getenv("LO_CERTIFICATE_DATABASE_PATH");
+    if (pEnvVarString)
+    {
+        OUString aCertificateDatabasePath = OStringToOUString(pEnvVarString, RTL_TEXTENCODING_UTF8);
+        try
+        {
+            std::shared_ptr<comphelper::ConfigurationChanges> pBatch(comphelper::ConfigurationChanges::create());
+            officecfg::Office::Common::Security::Scripting::CertDir::set(aCertificateDatabasePath, pBatch);
+            officecfg::Office::Common::Security::Scripting::ManualCertDir::set(aCertificateDatabasePath, pBatch);
+            pBatch->commit();
+        }
+        catch (uno::Exception const& rException)
+        {
+            SAL_WARN("lok", "Failed to set the NSS certificate database directory: " << rException.Message);
+        }
+    }
+}
+
 }
 
 static int lo_initialize(LibreOfficeKit* pThis, const char* pAppPath, const char* pUserProfileUrl)
@@ -6544,6 +6565,8 @@ static int lo_initialize(LibreOfficeKit* pThis, const char* pAppPath, const char
         batch->commit();
     }
 #endif
+
+    setCertificateDir();
 
     if (bNotebookbar)
     {
