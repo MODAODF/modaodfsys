@@ -39,6 +39,7 @@
 #include <vcl/weld.hxx>
 #include <strings.hrc>
 #include <SwStyleNameMapper.hxx>
+#include <comphelper/lok.hxx>
 
 using namespace ::com::sun::star;
 
@@ -139,6 +140,12 @@ SwCaptionDialog::SwCaptionDialog(weld::Window *pParent, SwView &rV)
     m_xFormatBox->connect_changed(LINK(this, SwCaptionDialog, SelectListBoxHdl));
     m_xOptionButton->connect_clicked(LINK(this, SwCaptionDialog, OptionHdl));
     m_xAutoCaptionButton->connect_clicked(LINK(this, SwCaptionDialog, CaptionHdl));
+
+   if (comphelper::LibreOfficeKit::isActive())
+   {
+        m_xOptionButton->hide();
+        m_xAutoCaptionButton->hide();
+    }
 
     m_xCategoryBox->append_text(m_sNone);
     size_t nCount = pMgr->GetFieldTypeCount();
@@ -338,7 +345,8 @@ void SwCaptionDialog::ModifyHdl()
     m_xOKButton->set_sensitive( bCorrectFieldName &&
                         (!pType ||
                             static_cast<SwSetExpFieldType*>(pType)->GetType() == nsSwGetSetExpType::GSE_SEQ) );
-    m_xOptionButton->set_sensitive(m_xOKButton->get_sensitive() && !bNone);
+    if (!comphelper::LibreOfficeKit::isActive())
+        m_xOptionButton->set_sensitive(m_xOKButton->get_sensitive() && !bNone);
     m_xNumberingSeparatorFT->set_sensitive(bOrderNumberingFirst && !bNone);
     m_xNumberingSeparatorED->set_sensitive(bOrderNumberingFirst && !bNone);
     m_xFormatText->set_sensitive(!bNone);
