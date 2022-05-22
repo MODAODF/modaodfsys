@@ -95,25 +95,6 @@ void ScPivotLayoutTreeList::InsertEntryForSourceTarget(weld::TreeView& rSource, 
     InsertEntryForItem(pOriginalItemValue, nTarget);
 }
 
-void ScPivotLayoutTreeList::InsertEntryForSourceTargetAddMode(weld::TreeView& rSource, int nTarget)
-{
-    ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
-    ScItemValue* pOriginalItemValue = pItemValue->mpOriginalItemValue;
-
-    mpParent->ItemInserted(pOriginalItemValue, meType);
-
-    InsertEntryForItem(pOriginalItemValue, nTarget);
-}
-
-void ScPivotLayoutTreeList::RemoveEntry(weld::TreeView& rSource)
-{
-    if (&rSource == mxControl.get()) {
-        ScItemValue* pItemValue = reinterpret_cast<ScItemValue*>(rSource.get_selected_id().toInt64());
-        OUString sId(OUString::number(reinterpret_cast<sal_Int64>(pItemValue)));
-        mxControl->remove_id(sId);
-    }
-}
-
 void ScPivotLayoutTreeList::InsertEntryForItem(const ScItemValue* pItemValue, int nPosition)
 {
     ScItemValue* pListItemValue = new ScItemValue(pItemValue);

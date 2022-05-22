@@ -28,8 +28,6 @@ public:
 
     void FillDataField(ScPivotFieldVector& rDataFields);
     void PushDataFieldNames(std::vector<ScDPName>& rDataFieldNames);
-    void InsertEntryForSourceTargetAddMode(weld::TreeView& rSource, int nTarget);
-    void RemoveEntry(weld::TreeView& rSource);
     virtual void InsertEntryForSourceTarget(weld::TreeView& rSource, int nTarget) override;
 
 private:
