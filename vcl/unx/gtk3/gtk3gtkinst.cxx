@@ -2542,9 +2542,9 @@ public:
 
     virtual void grab_focus() override
     {
-        if (has_focus())
-            return;
+        disable_notify_events();
         gtk_widget_grab_focus(m_pWidget);
+        enable_notify_events();
     }
 
     virtual bool has_focus() const override
@@ -8847,8 +8847,7 @@ public:
 
     virtual void grab_focus() override
     {
-        if (has_focus())
-            return;
+        disable_notify_events();
         gtk_widget_grab_focus(m_pWidget);
         if (!gtk_container_get_focus_child(GTK_CONTAINER(m_pWidget)))
         {
@@ -8856,6 +8855,7 @@ public:
             gtk_container_set_focus_child(GTK_CONTAINER(m_pWidget), GTK_WIDGET(pItem));
         }
         gtk_widget_child_focus(gtk_container_get_focus_child(GTK_CONTAINER(m_pWidget)), GTK_DIR_TAB_FORWARD);
+        enable_notify_events();
     }
 
     virtual ~GtkInstanceToolbar() override
@@ -9496,9 +9496,9 @@ public:
 
     virtual void grab_focus() override
     {
-        if (has_focus())
-            return;
+        disable_notify_events();
         gtk_entry_grab_focus_without_selecting(m_pEntry);
+        enable_notify_events();
     }
 
     virtual void set_alignment(TxtAlign eXAlign) override
@@ -15833,12 +15833,12 @@ public:
 
     virtual void grab_focus() override
     {
-        if (has_focus())
-            return;
+        disable_notify_events();
         if (m_pEntry)
             gtk_widget_grab_focus(m_pEntry);
         else
             gtk_widget_grab_focus(m_pToggleButton);
+        enable_notify_events();
     }
 
     virtual bool has_focus() const override
