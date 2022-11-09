@@ -973,6 +973,7 @@ $(eval $(call gb_Helper_register_packages_for_install,ooo,\
 	) \
 	resource_fonts \
 	cui \
+	macro_userconfig \
 ))
 
 $(eval $(call gb_Helper_register_packages_for_install,ooo_fonts,\
