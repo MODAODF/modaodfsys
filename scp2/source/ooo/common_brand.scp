@@ -338,7 +338,7 @@ ProfileItem gid_Brand_Profileitem_Bootstrap_Userinstall
   #elif defined MACOSX
     Value = "$SYSUSERCONFIG/%ONEWORDPRODUCTNAME/%USERDIRPRODUCTVERSION";
   #else
-    Value = "file:///opt/oxoffice/share/userconfig";
+    Value = "file:///opt/%ONEWORDPRODUCTNAME/share/userconfig";
   #endif
 End
 
