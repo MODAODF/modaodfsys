@@ -107,8 +107,8 @@ class QRcodePrint(unohelper.Base, XJob, XServiceInfo, XServiceName):
                 doc.insert('_QRcode_')
                 doc.activate('_QRcode_')
 
-            if doc.type == 'impress':
-                s = int(s/2)
+            # ~ if doc.type == 'impress':
+                # ~ s = int(s/2)
 
             for i in range(s):
                 hyperlinkaddr = texts[i].getAttribute("href")
@@ -293,14 +293,14 @@ class QRcodePrint(unohelper.Base, XJob, XServiceInfo, XServiceName):
 
         doc.set_currentpage(oDoc.getDrawPages().getByIndex(numPages-1))
 
-        # ~ oProp = PropertyValue()
-        # ~ oProp.Name = "WhatLayout"
-        # ~ oProp.Value = 1
-        # ~ properties = (oProp,)
-        # ~ self.call_dispatch('.uno:InsertPage',properties)
+        oProp = PropertyValue()
+        oProp.Name = "WhatLayout"
+        oProp.Value = 1
+        properties = (oProp,)
+        self.call_dispatch('.uno:InsertPage',properties)
         # ~ self.call_dispatch('.')
 
-        self.call_dispatch('.uno:InsertPageQuick')
+        # ~ self.call_dispatch('.uno:InsertPageQuick')
 
         doc.insert_text(NAME_LABEL + self._name + "\n" + ADD_LABEL + self._data, IMFONTSIZE)
 
