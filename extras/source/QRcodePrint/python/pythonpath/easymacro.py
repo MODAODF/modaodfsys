@@ -126,7 +126,15 @@ OS = platform.system()
 USER = getpass.getuser()
 PC = platform.node()
 DESKTOP = os.environ.get('DESKTOP_SESSION', '')
-INFO_DEBUG = '{}\n\n{}\n\n{}'.format(sys.version, platform.platform(), '\n'.join(sys.path))
+
+# Fixed by Firefly <firefly@ossii.com.tw>
+# sys.executable is empty, possibly in a change root environment,
+# with limited functionality.
+IS_CHROOT = len(sys.executable) == 0
+if IS_CHROOT:
+    INFO_DEBUG = '{}\n\n{}\n\n{}'.format(sys.version, 'CHROOT JAIL', '\n'.join(sys.path))
+else:
+    INFO_DEBUG = '{}\n\n{}\n\n{}'.format(sys.version, platform.platform(), '\n'.join(sys.path))
 
 IS_WIN = OS == 'Windows'
 LOG_NAME = 'ZAZ'
