@@ -31,7 +31,7 @@ Sub QRcodeRun()
 		oRet = pyGenQRcodePage(oDocGetURL)
 		&apos;msgbox oRet
 		If Not oRet Then
-			msgbox &quot;找不到檔案中有網際網路的超連結&quot;
+			msgbox &quot;找不倒檔案中有網際網路的超連結&quot;
 		End If
 		&apos;oData = pyGenQRcodePage(oDocGetURL)
 		&apos;msgbox Ubound(oData)
