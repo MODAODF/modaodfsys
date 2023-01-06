@@ -57,7 +57,6 @@ $(eval $(call gb_Module_add_targets,extras,\
 	Package_tplwizstyles \
 	Package_wordbook \
 	Package_userconfig \
-	Package_qrcodeprint \
 ))
 
 $(eval $(call gb_Module_add_l10n_targets,extras,\
