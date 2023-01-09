@@ -1473,6 +1473,11 @@ libo_FUZZ_ARG_ENABLE(skia,
         [Disable building Skia. Use --enable-skia=debug to build without optimizations.])
 )
 
+AC_ARG_ENABLE(ext-qrcodeprint,
+    AS_HELP_STRING([--enable-ext-qrcodeprint],
+        [Enable the QRcodePrint extension.])
+)
+
 ###############################################################################
 
 dnl ---------- *** ----------
@@ -12985,12 +12990,26 @@ dnl There are standalone tests for each of these below.
 WITH_EXTRA_EXTENSIONS=
 AC_SUBST([WITH_EXTRA_EXTENSIONS])
 
+#~ libo_CHECK_EXTENSION([QRcodePrint],[QRCODEPRINT],[qrcodeprint],[qrcodeprint],[yes])
 libo_CHECK_EXTENSION([ConvertTextToNumber],[CT2N],[ct2n],[ct2n],[])
 libo_CHECK_EXTENSION([Numbertext],[NUMBERTEXT],[numbertext],[numbertext],[b7cae45ad2c23551fd6ccb8ae2c1f59e-numbertext_0.9.5.oxt])
 if test "x$with_java" != "xno"; then
     libo_CHECK_EXTENSION([NLPSolver],[NLPSOLVER],[nlpsolver],[nlpsolver],[])
     libo_CHECK_EXTENSION([LanguageTool],[LANGUAGETOOL],[languagetool],[languagetool],[])
 fi
+
+AC_MSG_CHECKING([whether to build the qrcodeprint extension])
+if test "x$enable_ext_qrcodeprint" = "xyes" -a "x$enable_extension_integration" != "xno"; then
+    AC_MSG_RESULT([yes])
+    QRCODEPRINT_EXTENSION_PACK=yes
+    BUILD_TYPE="$BUILD_TYPE QRCODEPRINT"
+    SCPDEFS="$SCPDEFS -DWITH_EXTENSION_QRCODEPRINT"
+else
+    AC_MSG_RESULT([no])
+    QRCODEPRINT_EXTENSION_PACK=
+    SCPDEFS="$SCPDEFS -DWITHOUT_EXTENSION_QRCODEPRINT"
+fi
+AC_SUBST(QRCODEPRINT_EXTENSION_PACK)
 
 AC_MSG_CHECKING([whether to build opens___.ttf])
 if test "$enable_build_opensymbol" = "yes"; then
